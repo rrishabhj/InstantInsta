@@ -1,8 +1,12 @@
 package com.rishabh.github.instagrabber;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -12,8 +16,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 import com.rishabh.github.instagrabber.adaptor.TabsPagerAdapter;
+import com.rishabh.github.instagrabber.tabs.DownloadFragment;
+import com.rishabh.github.instagrabber.tabs.HistoryFragment;
 
 public class MainActivity extends AppCompatActivity implements ActionBar.TabListener{
 
@@ -24,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
   TabLayout tabLayout;
   private ViewPager viewPager;
   private TabsPagerAdapter mAdapter;
+  private WebView webView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +41,18 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     setContentView(R.layout.activity_main);
 
     initNavDrawerToggel();
+
+
   }
+
+
 
   private void initNavDrawerToggel() {
 
     toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
+    //toolbar.setTitle("InstaGrabber");
+
 
     // Initilization
     viewPager = (ViewPager) findViewById(R.id.pager);
@@ -153,4 +169,5 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
   public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
   }
+
 }

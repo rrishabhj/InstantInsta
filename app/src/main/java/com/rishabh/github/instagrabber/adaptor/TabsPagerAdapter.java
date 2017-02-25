@@ -1,6 +1,5 @@
 package com.rishabh.github.instagrabber.adaptor;
 
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -46,5 +45,5 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 			return new String("History");
 		}
 	}
-	
+
 }

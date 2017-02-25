@@ -1,7 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/tools"
+    android:layout_marginTop="12dp"
+    android:layout_margin="12dp"
+    >
+<LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+  <android.support.design.widget.TextInputLayout
+      android:id="@+id/input_layout_url"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/edittxturl"
+        android:layout_marginTop="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="Enter URL"/>
+  </android.support.design.widget.TextInputLayout>
+
+
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="right"
+      android:layout_margin="12dp"
+      >
+
+  <Button
+      android:text="Check URL"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      style="@style/Widget.AppCompat.Button.Colored"
+      android:id="@+id/btnCheckURL"
+      android:onClick="onClick"
+      />
+
+    <Button
+        android:text="Paste"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:id="@+id/btnPaste"
+        android:onClick="onClick"
+        />
+  </LinearLayout>
+
+  <TextView
+      android:text="File Saved To InstaGrabber/download"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/textView3"
+      android:gravity="center"
+      android:layout_margin="10dp"
+      />
+  <android.support.v7.widget.CardView
+      android:id="@+id/cv_downloadView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:cardCornerRadius="5dp"
+      app:cardElevation="12dp"
+      app:backgroundTint="#ffff11"
+      app:borderWidth="0dp"
+      app:cardUseCompatPadding="true"
+      >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+      <FrameLayout
+          android:layout_width="match_parent"
+          android:layout_height="282dp"
+          >
+
+
+
+         <ImageView
+             android:id="@+id/ivImage"
+          android:src="@drawable/navigation_header_image"
+          android:layout_width="match_parent"
+          android:layout_height="252dp"
+          android:scaleType="fitXY"
+          />
+         <RelativeLayout
+             android:layout_width="match_parent"
+             android:layout_height="252dp"
+             android:scaleType="fitXY"
+             android:id="@+id/image"
+             >
+
+
+           <LinearLayout
+               android:orientation="horizontal"
+               android:layout_width="match_parent"
+               android:layout_height="68dp"
+               android:layout_alignParentBottom="true"
+               android:layout_alignParentLeft="true"
+               android:layout_alignParentStart="true"
+
+               android:background="#33FFFFFF"
+               >
+
+             <com.github.lzyzsd.circleprogress.DonutProgress
+                 android:layout_marginLeft="14dp"
+                 android:id="@+id/donut_progress"
+                 android:layout_width="80dp"
+                 android:layout_gravity="center"
+                 custom:donut_text_size="10dp"
+                 android:layout_height="80dp"
+                 custom:donut_progress="30"
+                 app:donut_text_size="12dp"
+                 app:donut_unfinished_stroke_width="38dp"
+                 />
+             <TextView
+                 android:text="CANCEL"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:textSize="14dp"
+                 android:textColor="#FFFF00"
+                 android:layout_gravity="center"
+                 android:id="@+id/textView"
+                 />
+
+             <TextView
+                 android:text="1 task left"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:textSize="14dp"
+                 android:textColor="#FFFF00"
+                 android:layout_gravity="center"
+                 android:visibility="gone"
+                 android:id="@+id/tv_task"
+                 />
+
+
+           </LinearLayout>
+         </RelativeLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="14dp"
+            app:backgroundTint="@color/colorAccent"
+            android:src="@drawable/ic_action_download"
+            app:borderWidth="0dp"
+            app:elevation="6dp"
+            app:fabSize="normal"
+            />
+      </FrameLayout>
+      <TextView
+          android:id="@+id/tv_caption"
+          android:text="This will bw some cool caption with hashtags."
+          android:layout_margin="12dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          />
+      <Button
+          android:text="Copy All"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/textView2"
+          android:gravity="right"
+          android:layout_marginRight="12dp"
+          android:textAppearance="?attr/textAppearanceListItem"
+          />
+    </LinearLayout>
+  </android.support.v7.widget.CardView>
+
 </LinearLayout>
+  </ScrollView>
