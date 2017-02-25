@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
     initNavDrawerToggel();
 
+    Utilities.getStoragePermission(MainActivity.this);
 
   }
 

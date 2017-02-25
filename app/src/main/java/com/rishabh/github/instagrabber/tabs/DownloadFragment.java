@@ -1,14 +1,17 @@
 package com.rishabh.github.instagrabber.tabs;
 
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -24,13 +27,19 @@ import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.rishabh.github.instagrabber.MainActivity;
 import com.rishabh.github.instagrabber.R;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 public class DownloadFragment extends Fragment {
 
@@ -39,8 +48,11 @@ public class DownloadFragment extends Fragment {
 	private TextView tvCaption;
 	private EditText etURL;
 	static ProgressDialog mProgressDialog = null;
-	Button btnCheckURL;
+	Button btnCheckURL,btnPaste;
 	ImageView ivImage;
+	private ClipboardManager clipBoard;
+	private boolean type;
+	FloatingActionButton fabDownload;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,13 +70,33 @@ public class DownloadFragment extends Fragment {
 		btnCheckURL= (Button) rootView.findViewById(R.id.btnCheckURL);
 		etURL = (EditText) rootView.findViewById(R.id.edittxturl);
 		ivImage = (ImageView) rootView.findViewById(R.id.ivImage);
+		btnPaste = (Button) rootView.findViewById(R.id.btnPaste);
+		fabDownload = (FloatingActionButton) rootView.findViewById(R.id.fab);
 		mContext =getActivity();
+
+		clipBoard = (ClipboardManager)mContext.getSystemService(CLIPBOARD_SERVICE);
+
 
 		btnCheckURL.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View view) {
 
 				//todo check using reg exp whether the url is correct
 					new ValidateFileFromURL().execute(etURL.getText().toString());
+			}
+		});
+
+		btnPaste.setOnClickListener(new View.OnClickListener() {
+			@Override public void onClick(View view) {
+				ClipData clipData = clipBoard.getPrimaryClip();
+				ClipData.Item item = clipData.getItemAt(0);
+				String clipURL = item.getText().toString();
+				etURL.setText(clipURL+"");
+			}
+		});
+
+		fabDownload.setOnClickListener(new View.OnClickListener() {
+			@Override public void onClick(View view) {
+				new DownloadFileFromURL().execute(etURL.getText().toString());
 			}
 		});
 
@@ -178,20 +210,6 @@ public class DownloadFragment extends Fragment {
 	}
 
 
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-
-		Log.i("Tag","GamesFragemnt:onActivityCreated");
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		Log.i("Tag","DownloadFragment:onStart");
-	}
-
-
 	/**
 	 * Background Async Task to download file
 	 * */
@@ -218,29 +236,9 @@ public class DownloadFragment extends Fragment {
 			try {
 
 				Document doc = Jsoup.connect(f_url[0]).get();
-
+				URL url=null;
 				String html = doc.toString();
-
-				//for image url
-				int index = html.indexOf("display_src");
-				index += 13;
-				int start = html.indexOf("\"", index);
-				start += 1;
-				int end = html.indexOf("\"", start);
-				//                System.out.println("start:"+start+ "end:"+ end);
-				String urlImage = html.substring(start, end);
-
-				//for caption
-				int indexcaption = html.indexOf("\"caption\"");
-				indexcaption += 9;
-				int startCaption = html.indexOf("\"", indexcaption);
-				startCaption += 1;
-				int endCaption = html.indexOf("\"", startCaption);
-
-				String strCaption = null;
-				strCaption = html.substring(startCaption, endCaption);
-
-				//setting caption
+				String urlVid=null;
 
 				//for video
 				int indexVid = html.indexOf("\"video_url\"");
@@ -249,9 +247,25 @@ public class DownloadFragment extends Fragment {
 				startVid += 1;
 				int endVid = html.indexOf("\"", startVid);
 
-				String urlVid = html.substring(startVid, endVid);
+				urlVid = html.substring(startVid, endVid);
 
-				URL url = new URL(urlVid);
+				if (urlVid!=null) {
+
+					url = new URL(urlVid);
+					type =false;
+				}else {//for image url
+					int index = html.indexOf("display_src");
+					index += 13;
+					int start = html.indexOf("\"", index);
+					start += 1;
+					int end = html.indexOf("\"", start);
+					//                System.out.println("start:"+start+ "end:"+ end);
+					String urlImage = html.substring(start, end);
+
+					url = new URL(urlImage);
+					type = true;
+				}
+
 				URLConnection conection = url.openConnection();
 				conection.connect();
 				// getting file length
@@ -260,8 +274,38 @@ public class DownloadFragment extends Fragment {
 				// input stream to read file - with 8k buffer
 				InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
+				//generate a unique name
+				// if type = false it is vid else img
+
+				SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+				File myFile = null;
+				if(type) {
+					myFile =
+							new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+									+
+									File.separator
+									+ "InstagramImageDownloader"
+									+ File.separator
+									+ "Insta-"
+									+ simpleDateFormat.format(new Date())
+									+ ".jpg");
+				}else{
+					myFile =
+							new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+									+
+									File.separator
+									+ "InstagramImageDownloader"
+									+ File.separator
+									+ "Insta-"
+									+ simpleDateFormat.format(new Date())
+									+ ".mp4");
+
+				}
+
 				// Output stream to write file
-				OutputStream output = new FileOutputStream("/sdcard/downloadedfile.mp4");
+
+
+				OutputStream output = new FileOutputStream(myFile);
 
 				byte data[] = new byte[1024];
 
@@ -283,6 +327,8 @@ public class DownloadFragment extends Fragment {
 				// closing streams
 				output.close();
 				input.close();
+
+				return myFile.getAbsolutePath();
 			} catch (Exception e) {
 				Log.e("Error: ", e.getMessage());
 			}
@@ -311,12 +357,15 @@ public class DownloadFragment extends Fragment {
 
 			// Displaying downloaded image into image view
 			// Reading image path from sdcard
-			String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.mp4";
+
+
+			//String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.mp4";
 			Toast.makeText(mContext,"Vid Saved",Toast.LENGTH_LONG).show();
 			// setting downloaded into image view
-			//my_image.setImageDrawable(Drawable.createFromPath(imagePath));
+			ivImage.setImageDrawable(Drawable.createFromPath(file_url));
 			//my_image.setVideoPath(imagePath);
 			//my_image.start();
+
 		}
 	}
 
@@ -332,5 +381,20 @@ public class DownloadFragment extends Fragment {
 		if (mProgressDialog.isShowing() && mProgressDialog != null)
 			mProgressDialog.dismiss();
 	}
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		Log.i("Tag","GamesFragemnt:onActivityCreated");
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		Log.i("Tag","DownloadFragment:onStart");
+	}
+
+
 
 }
