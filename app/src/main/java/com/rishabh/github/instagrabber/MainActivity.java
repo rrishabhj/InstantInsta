@@ -78,7 +78,10 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
       @Override
       public void onPageSelected(int position) {
-
+        HistoryFragment historyFragment=HistoryFragment.newInstance();
+        if (historyFragment!=null){
+          historyFragment.refresh();
+        }
       }
 
       @Override
@@ -169,6 +172,10 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
   @Override
   public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 
+  }
+
+  public interface FragmentRefresh{
+      void refresh();
   }
 
 }

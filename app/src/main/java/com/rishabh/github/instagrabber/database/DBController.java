@@ -52,8 +52,21 @@ public class DBController {
         return img;
     }
 
+    public int getTotalImages(){
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ArrayList<InstaImage> imageList = new ArrayList<InstaImage>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + DBhelper.TABLE_NAME;
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        return cursor.getCount();
+    }
+
     // Getting All Employees
     public ArrayList<InstaImage> getAllInstaImages() {
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ArrayList<InstaImage> imageList = new ArrayList<InstaImage>();
@@ -94,6 +107,31 @@ public class DBController {
     //    return db.update(DBhelper.TABLE_NAME, values, DBhelper.COL_EMP_ID + " = ?",
     //            new String[]{String.valueOf(emp.get_id())});
     //}
+
+    public  boolean isURLPresent(String postURL){
+        boolean flag=false;
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + DBhelper.TABLE_NAME;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                if(cursor.getString(2).equals(postURL)){
+                    flag=true;
+                    break;
+                }
+            } while (cursor.moveToNext());
+        }
+        return flag;
+    }
+
+    public void clearTable()   {
+        database = dbHelper.getWritableDatabase();
+        database.delete(DBhelper.TABLE_NAME, null,null);
+    }
 
     // Deleting single employee
     public void deleteInstaImage(InstaImage img) {

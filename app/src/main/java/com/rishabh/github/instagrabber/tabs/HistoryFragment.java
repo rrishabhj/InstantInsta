@@ -17,11 +17,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import com.rishabh.github.instagrabber.MainActivity;
 import com.rishabh.github.instagrabber.R;
 import com.rishabh.github.instagrabber.adaptor.ImageRecyclerAdaptor;
 import com.rishabh.github.instagrabber.database.DBController;
+import com.rishabh.github.instagrabber.database.InstaImage;
+import java.util.ArrayList;
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment implements MainActivity.FragmentRefresh {
 
 	ImageView ivSettings;
 	private FragmentActivity mContext;
@@ -30,6 +33,15 @@ public class HistoryFragment extends Fragment {
 	//DB
 	private DBController dbcon;
 	private ImageRecyclerAdaptor imageRecyclerAdaptor;
+
+	public static HistoryFragment newInstance() {
+		//Bundle args = new Bundle();
+		//args.putString(ARG_PAGE, title);
+		HistoryFragment fragment = new HistoryFragment();
+		//fragment.setRetainInstance(true);
+		//fragment.setArguments(args);
+		return fragment;
+	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,17 +59,31 @@ public class HistoryFragment extends Fragment {
 		dbcon = new DBController(mContext);
 
 		rvInsta= (RecyclerView) rootView.findViewById(R.id.rvInstaImages);
-		imageRecyclerAdaptor = new ImageRecyclerAdaptor(dbcon.getAllInstaImages(),mContext);
+		ArrayList<InstaImage> list=dbcon.getAllInstaImages();
+		imageRecyclerAdaptor = new ImageRecyclerAdaptor(list,mContext);
 
 		rvInsta.setAdapter(imageRecyclerAdaptor);
 		rvInsta.setLayoutManager(new LinearLayoutManager(mContext));
 
+		rvInsta.setHasFixedSize(true);
+		rvInsta.setItemViewCacheSize(20);
+		rvInsta.setDrawingCacheEnabled(true);
+		rvInsta.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+		//rvInsta.s/
 
-			return rootView;
+		imageRecyclerAdaptor.notifyDataSetChanged();
+		return rootView;
 	}
+
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+	}
+
+	@Override public void refresh() {
+		if (imageRecyclerAdaptor!=null) {
+			imageRecyclerAdaptor.notifyDataSetChanged();
+		}
 	}
 }

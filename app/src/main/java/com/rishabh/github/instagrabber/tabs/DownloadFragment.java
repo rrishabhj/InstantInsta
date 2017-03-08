@@ -26,6 +26,8 @@ import android.widget.Toast;
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.rishabh.github.instagrabber.MainActivity;
 import com.rishabh.github.instagrabber.R;
+import com.rishabh.github.instagrabber.database.DBController;
+import com.rishabh.github.instagrabber.database.InstaImage;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,6 +55,9 @@ public class DownloadFragment extends Fragment {
 	private ClipboardManager clipBoard;
 	private boolean type;
 	FloatingActionButton fabDownload;
+	//DB
+	private DBController dbcon;
+
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +80,9 @@ public class DownloadFragment extends Fragment {
 		mContext =getActivity();
 
 		clipBoard = (ClipboardManager)mContext.getSystemService(CLIPBOARD_SERVICE);
+
+		//DB
+		dbcon = new DBController(mContext);
 
 
 		btnCheckURL.setOnClickListener(new View.OnClickListener() {
@@ -222,18 +230,44 @@ public class DownloadFragment extends Fragment {
 		@Override protected void onPreExecute() {
 			super.onPreExecute();
 
+
 			circularProgress.setVisibility(View.VISIBLE);
 			circularProgress.setText("0%");
 			circularProgress.setDonut_progress("0");
 			circularProgress.setMax(100);
+
 		}
 
+		private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
+
+			File direct = new File(Environment.getExternalStorageDirectory() + "/DirName");
+
+			if (!direct.exists()) {
+				File wallpaperDirectory = new File("/sdcard/DirName/");
+				wallpaperDirectory.mkdirs();
+			}
+
+			File file = new File(new File("/sdcard/DirName/"), fileName);
+			if (file.exists()) {
+				file.delete();
+			}
+			try {
+				FileOutputStream out = new FileOutputStream(file);
+				imageToSave.compress(Bitmap.CompressFormat.JPEG, 100, out);
+				out.flush();
+				out.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		/**
 		 * Downloading file in background thread
 		 */
 		@Override protected String doInBackground(String... f_url) {
 			int count;
+			type=false;
 			try {
+				String strCaption= null;
 
 				Document doc = Jsoup.connect(f_url[0]).get();
 				URL url=null;
@@ -249,11 +283,11 @@ public class DownloadFragment extends Fragment {
 
 				urlVid = html.substring(startVid, endVid);
 
-				if (urlVid!=null) {
-
-					url = new URL(urlVid);
-					type =false;
-				}else {//for image url
+				//if (urlVid!=null) {
+        //
+				//	url = new URL(urlVid);
+				//	type =false;
+				//}else {//for image url
 					int index = html.indexOf("display_src");
 					index += 13;
 					int start = html.indexOf("\"", index);
@@ -264,7 +298,19 @@ public class DownloadFragment extends Fragment {
 
 					url = new URL(urlImage);
 					type = true;
-				}
+				//}
+
+
+				//for caption
+				int indexcaption = html.indexOf("\"caption\"");
+				indexcaption += 9;
+
+				int startCaption = html.indexOf("\"", indexcaption);
+				startCaption += 1;
+				int endCaption = html.indexOf("\"", startCaption);
+
+				strCaption= html.substring(startCaption, endCaption);
+
 
 				URLConnection conection = url.openConnection();
 				conection.connect();
@@ -277,35 +323,37 @@ public class DownloadFragment extends Fragment {
 				//generate a unique name
 				// if type = false it is vid else img
 
-				SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-				File myFile = null;
-				if(type) {
-					myFile =
-							new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-									+
-									File.separator
-									+ "InstagramImageDownloader"
-									+ File.separator
-									+ "Insta-"
-									+ simpleDateFormat.format(new Date())
-									+ ".jpg");
-				}else{
-					myFile =
-							new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-									+
-									File.separator
-									+ "InstagramImageDownloader"
-									+ File.separator
-									+ "Insta-"
-									+ simpleDateFormat.format(new Date())
-									+ ".mp4");
+				SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-mm-dd-hh:mm:ss");
+				//File myFile = null;
 
-				}
 
 				// Output stream to write file
 
+				File direct = new File(Environment.getExternalStorageDirectory() + "/InstantInsta");
 
-				OutputStream output = new FileOutputStream(myFile);
+				if (!direct.exists()) {
+					direct = new File(Environment.getExternalStorageDirectory() + "/InstantInsta");
+					direct.mkdirs();
+				}
+
+				String fileName=null;
+				if(type) {
+					fileName = "Insta-"
+							+ simpleDateFormat.format(new Date())
+							+ ".jpg";
+				}else{
+
+					fileName = "Insta-"
+							+ simpleDateFormat.format(new Date())
+							+ ".mp4";
+				}
+
+				File file = new File(direct, fileName);
+				if (file.exists()) {
+					file.delete();
+				}
+
+				OutputStream output = new FileOutputStream(file);
 
 				byte data[] = new byte[1024];
 
@@ -328,9 +376,16 @@ public class DownloadFragment extends Fragment {
 				output.close();
 				input.close();
 
-				return myFile.getAbsolutePath();
+				// add image into the database
+
+				int imageID=dbcon.getTotalImages()+1;
+
+				InstaImage instaImage=new InstaImage(imageID, fileName, f_url[0], file.getAbsolutePath(), strCaption);
+				dbcon.addimage(instaImage);
+
+				return file.getAbsolutePath();
 			} catch (Exception e) {
-				Log.e("Error: ", e.getMessage());
+				Log.e("Error", e.getMessage());
 			}
 
 			return null;
@@ -394,7 +449,5 @@ public class DownloadFragment extends Fragment {
 		super.onStart();
 		Log.i("Tag","DownloadFragment:onStart");
 	}
-
-
 
 }

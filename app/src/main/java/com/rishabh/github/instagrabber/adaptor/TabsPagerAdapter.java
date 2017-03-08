@@ -23,8 +23,8 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 			return downloadFragment;
 		case 1:
 			// Games fragment activity
-			HistoryFragment gamesFragment=new HistoryFragment();
-			gamesFragment.setRetainInstance(true);
+			HistoryFragment gamesFragment=HistoryFragment.newInstance();
+
 			return gamesFragment;
 		default:
 			return new DownloadFragment();
