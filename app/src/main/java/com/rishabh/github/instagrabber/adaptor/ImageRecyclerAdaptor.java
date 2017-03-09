@@ -76,7 +76,6 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
 
     if(imgFile.exists()){
 
-
       // recognizing weather its a image or video from file format
       int i = instaImage.get_name().lastIndexOf('.');
       extension = instaImage.get_name().substring(i + 1);
@@ -84,10 +83,12 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
       if (extension.equalsIgnoreCase("mp4")) {
         Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(imgFile.getAbsolutePath(), MediaStore.Images.Thumbnails.MINI_KIND);
         holder.imageView.setImageBitmap(thumbnail);
+        holder.ivItemPlay.setVisibility(View.VISIBLE);
       } else {
+
         Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
         holder.imageView.setImageBitmap(myBitmap);
-
+        holder.ivItemPlay.setVisibility(View.INVISIBLE);
       }
 
 
@@ -204,7 +205,7 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
   }
 
   public class ItemViewHolder extends RecyclerView.ViewHolder {
-    ImageView imageView,ivSettings;
+    ImageView imageView,ivSettings, ivItemPlay;
     TextView tvCaption,tvRepost, tvDelete;
 
     public ItemViewHolder(View itemView) {
@@ -215,6 +216,7 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
       tvDelete = (TextView) itemView.findViewById(R.id.tvDelete);
 
       ivSettings= (ImageView) itemView.findViewById(R.id.ivsettings);
+      ivItemPlay = (ImageView) itemView.findViewById(R.id.ivItemPlay);
 
 
     }

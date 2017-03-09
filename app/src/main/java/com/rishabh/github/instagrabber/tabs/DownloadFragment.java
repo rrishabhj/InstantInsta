@@ -55,7 +55,7 @@ public class DownloadFragment extends Fragment {
 	private EditText etURL;
 	static ProgressDialog mProgressDialog = null;
 	Button btnCheckURL,btnPaste;
-	ImageView ivImage;
+	ImageView ivImage, ivPlayBtn;
 	private ClipboardManager clipBoard;
 	private boolean type;
 	FloatingActionButton fabDownload;
@@ -81,8 +81,10 @@ public class DownloadFragment extends Fragment {
 		ivImage = (ImageView) rootView.findViewById(R.id.ivImage);
 		btnPaste = (Button) rootView.findViewById(R.id.btnPaste);
 		fabDownload = (FloatingActionButton) rootView.findViewById(R.id.fab);
+		ivPlayBtn = (ImageView) rootView.findViewById(R.id.ivPlayBtn);
 		mContext =getActivity();
 
+		ivPlayBtn.setVisibility(View.INVISIBLE);
 		clipBoard = (ClipboardManager)mContext.getSystemService(CLIPBOARD_SERVICE);
 
 		//DB
@@ -112,20 +114,21 @@ public class DownloadFragment extends Fragment {
 			}
 		});
 
-		//final ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-		//clipboard.addPrimaryClipChangedListener( new ClipboardManager.OnPrimaryClipChangedListener() {
-		//	public void onPrimaryClipChanged() {
-		//		String a = clipboard.getText().toString();
-		//		Toast.makeText(mContext,"Copy:\n"+a,Toast.LENGTH_LONG).show();
-    //
-		//		DownloadFileFromURL downloadFileFromURL=new DownloadFileFromURL();
-    //
-		//		//first perform check whether it is a valid URL
-		//		//TODO
-    //
-		//		downloadFileFromURL.execute(a);
-		//	}
-		//});
+		final ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+		clipboard.addPrimaryClipChangedListener( new ClipboardManager.OnPrimaryClipChangedListener() {
+			public void onPrimaryClipChanged() {
+				String a = clipboard.getText().toString();
+				Toast.makeText(mContext,"Copy:\n"+a,Toast.LENGTH_LONG).show();
+
+				
+				DownloadFileFromURL downloadFileFromURL=new DownloadFileFromURL();
+
+				//first perform check whether it is a valid URL
+				//TODO
+				//Toast.makeText(mContext,"Clip: "+ a , Toast.LENGTH_LONG).show();
+				downloadFileFromURL.execute(a);
+			}
+		});
 		return rootView;
 	}
 
@@ -147,6 +150,8 @@ public class DownloadFragment extends Fragment {
 
 				Document doc = Jsoup.connect(f_url[0]).get();
 				String html = doc.toString();
+
+				type = false;
 
 				//for caption
 				int indexcaption = html.indexOf("\"caption\"");
@@ -172,9 +177,9 @@ public class DownloadFragment extends Fragment {
 				String urlVid = null;
 				urlVid=html.substring(startVid, endVid);
 
-				if (urlVid!=null){
-
-
+				if (urlVid.equalsIgnoreCase("en")){
+					// it is a vid show play btn
+					type=true;
 				}
 
 				//for image url
@@ -217,6 +222,9 @@ public class DownloadFragment extends Fragment {
 		protected void onPostExecute(Bitmap image) {
 			dismissDialog();
 			ivImage.setImageBitmap(image);
+			if (type){
+				ivPlayBtn.setVisibility(View.VISIBLE);
+			}
 		}
 
 	}
@@ -407,6 +415,7 @@ public class DownloadFragment extends Fragment {
 			if (extension.equalsIgnoreCase("mp4")) {
 				Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(file_url, MediaStore.Images.Thumbnails.MINI_KIND);
 				ivImage.setImageBitmap(thumbnail);
+				//ivPlayBtn.setVisibility(View.VISIBLE);
 			} else {
 				ivImage.setImageDrawable(Drawable.createFromPath(file_url));
 			}

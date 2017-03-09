@@ -20,6 +20,11 @@
         android:layout_height="match_parent"
         android:orientation="horizontal"
         >
+
+      <FrameLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          >
     <ImageView
         android:src="@drawable/imageinsta"
         android:id="@+id/imageView"
@@ -27,6 +32,17 @@
         android:layout_width="92dp"
         android:layout_height="110dp"
         />
+
+        <ImageView
+            android:id="@+id/ivItemPlay"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_play_btn"
+            android:layout_margin="20dp"
+            android:elevation="15dp"
+            android:visibility="invisible"/>
+
+      </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
