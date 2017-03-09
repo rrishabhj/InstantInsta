@@ -8,10 +8,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -40,6 +43,7 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
 
   //DB
   private DBController dbcon;
+  private String extension;
 
   public ImageRecyclerAdaptor() {
   }
@@ -72,11 +76,26 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
 
     if(imgFile.exists()){
 
-      Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-      holder.imageView.setImageBitmap(myBitmap);
-    }
-    holder.tvCaption.setText(instaImage.get_caption());
 
+      // recognizing weather its a image or video from file format
+      int i = instaImage.get_name().lastIndexOf('.');
+      extension = instaImage.get_name().substring(i + 1);
+
+      if (extension.equalsIgnoreCase("mp4")) {
+        Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(imgFile.getAbsolutePath(), MediaStore.Images.Thumbnails.MINI_KIND);
+        holder.imageView.setImageBitmap(thumbnail);
+      } else {
+        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        holder.imageView.setImageBitmap(myBitmap);
+
+      }
+
+
+      //Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+      //holder.imageView.setImageBitmap(myBitmap);
+    }
+
+    holder.tvCaption.setText(instaImage.get_caption());
 
     holder.tvRepost.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View view) {

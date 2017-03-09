@@ -111,6 +111,7 @@
             android:layout_width="104dp"
             android:layout_height="104dp"
             />
+
         <RelativeLayout
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
@@ -153,7 +154,17 @@
 
 
            </LinearLayout>
-         </RelativeLayout>
+          <ImageView
+              android:layout_width="75dp"
+              android:layout_height="75dp"
+              android:src="@drawable/ic_play_forth"
+              android:layout_centerVertical="true"
+              android:layout_centerHorizontal="true"
+              android:elevation="15dp"
+
+
+              />
+        </RelativeLayout>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

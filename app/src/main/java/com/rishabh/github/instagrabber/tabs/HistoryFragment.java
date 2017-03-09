@@ -69,7 +69,6 @@ public class HistoryFragment extends Fragment implements MainActivity.FragmentRe
 		rvInsta.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 		//rvInsta.s/
 
-
 		imageRecyclerAdaptor.notifyDataSetChanged();
 		return rootView;
 	}

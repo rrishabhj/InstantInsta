@@ -8,9 +8,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -36,6 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -262,12 +265,12 @@ public class DownloadFragment extends Fragment {
 
 				urlVid = html.substring(startVid, endVid);
 
-				//if (urlVid!=null) {
-        //
-				//	url = new URL(urlVid);
-				//	type =false;
-				//}else {
-				// for image url
+				if (urlVid.equalsIgnoreCase("en")) {
+					//
+					//	url = new URL(urlVid);
+					//	type =false;
+					//}else {
+					// for image url
 
 					int index = html.indexOf("display_src");
 					index += 13;
@@ -276,10 +279,16 @@ public class DownloadFragment extends Fragment {
 					int end = html.indexOf("\"", start);
 					//                System.out.println("start:"+start+ "end:"+ end);
 					String urlImage = html.substring(start, end);
-
+					type = false;
 					url = new URL(urlImage);
+
+				}else{
+
+					url = new URL(urlVid);
 					type = true;
-				//}
+				}
+
+				// true is for video and false is image
 
 
 				//for caption
@@ -302,7 +311,6 @@ public class DownloadFragment extends Fragment {
 				InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
 				//generate a unique name
-				// if type = false it is vid else img
 
 				SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-mm-dd-hh:mm:ss");
 				//File myFile = null;
@@ -318,7 +326,7 @@ public class DownloadFragment extends Fragment {
 				}
 
 				String fileName=null;
-				if(type) {
+				if(!type) {
 					fileName = "Insta-"
 							+ simpleDateFormat.format(new Date())
 							+ ".jpg";
@@ -388,12 +396,23 @@ public class DownloadFragment extends Fragment {
 		@Override protected void onPostExecute(String file_url) {
 
 			circularProgress.setVisibility(View.GONE);
-			Toast.makeText(mContext,"Post Saved",Toast.LENGTH_LONG).show();
-			ivImage.setImageDrawable(Drawable.createFromPath(file_url));
-			((OnPostDownload)activity).refreshList();
+			Toast.makeText(mContext, "Post Saved", Toast.LENGTH_LONG).show();
+
+			String extension = "";
+
+			// recognizing weather its a image or video from file format
+			int i = file_url.lastIndexOf('.');
+			extension = file_url.substring(i + 1);
+
+			if (extension.equalsIgnoreCase("mp4")) {
+				Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(file_url, MediaStore.Images.Thumbnails.MINI_KIND);
+				ivImage.setImageBitmap(thumbnail);
+			} else {
+				ivImage.setImageDrawable(Drawable.createFromPath(file_url));
+			}
+			((OnPostDownload) activity).refreshList();
 		}
 	}
-
 
 	public static void showDialog(Context context) {
 		mProgressDialog = new ProgressDialog(context);
