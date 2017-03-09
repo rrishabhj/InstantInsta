@@ -2,9 +2,14 @@ package com.rishabh.github.instagrabber.tabs;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -12,6 +17,8 @@ import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +38,7 @@ import com.rishabh.github.instagrabber.MainActivity;
 import com.rishabh.github.instagrabber.R;
 import com.rishabh.github.instagrabber.database.DBController;
 import com.rishabh.github.instagrabber.database.InstaImage;
+import com.rishabh.github.instagrabber.service.DownloadService;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -63,6 +71,9 @@ public class DownloadFragment extends Fragment {
 	private DBController dbcon;
 	private Activity activity;
 
+	DownloadService mService;
+	boolean mBound = false;
+
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -86,6 +97,9 @@ public class DownloadFragment extends Fragment {
 
 		ivPlayBtn.setVisibility(View.INVISIBLE);
 		clipBoard = (ClipboardManager)mContext.getSystemService(CLIPBOARD_SERVICE);
+
+		Intent intent = new Intent(mContext, DownloadService.class);
+		mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
 		//DB
 		dbcon = new DBController(mContext);
@@ -121,15 +135,100 @@ public class DownloadFragment extends Fragment {
 				Toast.makeText(mContext,"Copy:\n"+a,Toast.LENGTH_LONG).show();
 
 
-				DownloadFileFromURL downloadFileFromURL=new DownloadFileFromURL();
+				//DownloadFileFromURL downloadFileFromURL=new DownloadFileFromURL();
+
+
 
 				//first perform check whether it is a valid URL
 				//TODO
+				mService.downloadAsynFile(a);
+
+
 				//Toast.makeText(mContext,"Clip: "+ a , Toast.LENGTH_LONG).show();
-				downloadFileFromURL.execute(a);
+				//downloadFileFromURL.execute(a);
 			}
 		});
+
 		return rootView;
+	}
+
+
+	/**
+	 *  receiver for downloading insta share url
+	 */
+
+	// Flag if receiver is registered
+	private boolean mReceiversRegistered = false;
+	// Define a handler and a broadcast receiver
+	private final Handler mHandler = new Handler();
+
+
+	private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction().equals(DownloadService.CUSTOM_INTENT)) {
+
+				if (intent.getFlags()!=100) {
+					circularProgress.setVisibility(View.VISIBLE);
+					circularProgress.setText(intent.getFlags() + "%");
+					circularProgress.setDonut_progress(intent.getFlags() + "");
+					circularProgress.setMax(100);
+				}else{
+						circularProgress.setVisibility(View.GONE);
+				}
+
+				}
+		}
+	};
+
+	/** Defines callbacks for service binding, passed to bindService() */
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className,
+				IBinder service) {
+			// We've bound to LocalService, cast the IBinder and get LocalService instance
+			DownloadService.LocalBinder binder = (DownloadService.LocalBinder) service;
+			mService = binder.getService();
+			mBound = true;
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mBound = false;
+		}
+	};
+
+
+	@Override public void onResume() {
+		super.onResume();
+		// Register Sync Recievers
+		IntentFilter intentToReceiveFilter = new IntentFilter();
+		intentToReceiveFilter.addAction(DownloadService.CUSTOM_INTENT);
+		mContext.registerReceiver(mIntentReceiver, intentToReceiveFilter, null, mHandler);
+		mReceiversRegistered = true;
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		// Make sure you unregister your receivers when you pause your activity
+		if(mReceiversRegistered) {
+			mContext.unregisterReceiver(mIntentReceiver);
+			mReceiversRegistered = false;
+		}
+	}
+
+	@Override public void onStop() {
+		super.onStop();
+		super.onStop();
+		// Unbind from the service
+		if (mBound) {
+			mContext.unbindService(mConnection);
+			mBound = false;
+		}
+
 	}
 
 	/**
