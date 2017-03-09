@@ -8,9 +8,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,10 +44,10 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
   public ImageRecyclerAdaptor() {
   }
 
-  public ImageRecyclerAdaptor(ArrayList<InstaImage> arrayList, Context context) {
-    this.imageList = arrayList;
+  public ImageRecyclerAdaptor( Context context) {
     mContext=context;
     dbcon = new DBController(mContext);
+    imageList = dbcon.getAllInstaImages();
   }
 
   @Override public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -97,9 +101,12 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
               public void onClick(DialogInterface dialog, int which) {
 
                 dbcon.deleteInstaImage(imageList.get(imageList.size()-position-1));
+
+                //delete from phone
+                deleteImage( imageList.get(imageList.size()-1-position).get_phoneImageURL());
+
                 imageList.remove(imageList.size()-position-1);
                 notifyDataSetChanged();
-
               }
             })
             .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -158,6 +165,17 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
       }
     });
 
+    holder.imageView.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+
+        String postFileName= imageList.get(imageList.size()-1-position).get_name();
+
+        intent.setDataAndType(Uri.parse("file:///sdcard/InstantInsta/"+postFileName), "image/*");
+        mContext.startActivity(intent);
+      }
+    });
 
 
   }
@@ -178,7 +196,46 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
       tvDelete = (TextView) itemView.findViewById(R.id.tvDelete);
 
       ivSettings= (ImageView) itemView.findViewById(R.id.ivsettings);
+
+
     }
   }
 
+
+  public void deleteImage(String filePath) {
+    File fdelete = new File(filePath);
+    if (fdelete.exists()) {
+      if (fdelete.delete()) {
+        Log.e("-->", "file Deleted :" + filePath);
+        callBroadCast();
+      } else {
+        Log.e("-->", "file not Deleted :" + filePath);
+      }
+    }
+  }
+
+  public void callBroadCast() {
+    if (Build.VERSION.SDK_INT >= 14) {
+      Log.e("-->", " >= 14");
+      MediaScannerConnection.scanFile(mContext, new String[]{ Environment.getExternalStorageDirectory().toString()}, null, new MediaScannerConnection.OnScanCompletedListener() {
+        /*
+         *   (non-Javadoc)
+         * @see android.media.MediaScannerConnection.OnScanCompletedListener#onScanCompleted(java.lang.String, android.net.Uri)
+         */
+        public void onScanCompleted(String path, Uri uri) {
+          Log.e("ExternalStorage", "Scanned " + path + ":");
+          Log.e("ExternalStorage", "-> uri=" + uri);
+        }
+      });
+    } else {
+      Log.e("-->", " < 14");
+      mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+          Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+    }
+  }
+
+  public void onRefreshh(){
+      imageList= dbcon.getAllInstaImages();
+    notifyDataSetChanged();
+  }
 }

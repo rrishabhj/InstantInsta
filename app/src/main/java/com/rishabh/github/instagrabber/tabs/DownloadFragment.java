@@ -1,5 +1,6 @@
 package com.rishabh.github.instagrabber.tabs;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -57,7 +58,7 @@ public class DownloadFragment extends Fragment {
 	FloatingActionButton fabDownload;
 	//DB
 	private DBController dbcon;
-
+	private Activity activity;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -238,28 +239,6 @@ public class DownloadFragment extends Fragment {
 
 		}
 
-		private void createDirectoryAndSaveFile(Bitmap imageToSave, String fileName) {
-
-			File direct = new File(Environment.getExternalStorageDirectory() + "/DirName");
-
-			if (!direct.exists()) {
-				File wallpaperDirectory = new File("/sdcard/DirName/");
-				wallpaperDirectory.mkdirs();
-			}
-
-			File file = new File(new File("/sdcard/DirName/"), fileName);
-			if (file.exists()) {
-				file.delete();
-			}
-			try {
-				FileOutputStream out = new FileOutputStream(file);
-				imageToSave.compress(Bitmap.CompressFormat.JPEG, 100, out);
-				out.flush();
-				out.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 		/**
 		 * Downloading file in background thread
 		 */
@@ -287,7 +266,9 @@ public class DownloadFragment extends Fragment {
         //
 				//	url = new URL(urlVid);
 				//	type =false;
-				//}else {//for image url
+				//}else {
+				// for image url
+
 					int index = html.indexOf("display_src");
 					index += 13;
 					int start = html.indexOf("\"", index);
@@ -405,22 +386,11 @@ public class DownloadFragment extends Fragment {
 		 * Dismiss the progress dialog
 		 **/
 		@Override protected void onPostExecute(String file_url) {
-			// dismiss the dialog after the file was downloaded
-			//dismissDialog(progress_bar_type);
 
 			circularProgress.setVisibility(View.GONE);
-
-			// Displaying downloaded image into image view
-			// Reading image path from sdcard
-
-
-			//String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.mp4";
-			Toast.makeText(mContext,"Vid Saved",Toast.LENGTH_LONG).show();
-			// setting downloaded into image view
+			Toast.makeText(mContext,"Post Saved",Toast.LENGTH_LONG).show();
 			ivImage.setImageDrawable(Drawable.createFromPath(file_url));
-			//my_image.setVideoPath(imagePath);
-			//my_image.start();
-
+			((OnPostDownload)activity).refreshList();
 		}
 	}
 
@@ -441,13 +411,21 @@ public class DownloadFragment extends Fragment {
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		Log.i("Tag","GamesFragemnt:onActivityCreated");
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
 		Log.i("Tag","DownloadFragment:onStart");
+	}
+
+	public interface OnPostDownload{
+		void refreshList();
+	}
+
+	@Override public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		this.activity = activity;
 	}
 
 }

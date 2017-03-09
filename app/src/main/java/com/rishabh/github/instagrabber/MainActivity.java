@@ -24,7 +24,8 @@ import com.rishabh.github.instagrabber.adaptor.TabsPagerAdapter;
 import com.rishabh.github.instagrabber.tabs.DownloadFragment;
 import com.rishabh.github.instagrabber.tabs.HistoryFragment;
 
-public class MainActivity extends AppCompatActivity implements ActionBar.TabListener{
+public class MainActivity extends AppCompatActivity implements
+    DownloadFragment.OnPostDownload{
 
   DrawerLayout androidDrawerLayout;
   ActionBarDrawerToggle actionBarDrawerToggle;
@@ -70,25 +71,25 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
     tabLayout.setupWithViewPager(viewPager);
 
-    viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-      @Override
-      public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-      }
-
-      @Override
-      public void onPageSelected(int position) {
-        HistoryFragment historyFragment=HistoryFragment.newInstance();
-        if (historyFragment!=null){
-          historyFragment.refresh();
-        }
-      }
-
-      @Override
-      public void onPageScrollStateChanged(int state) {
-
-      }
-    });
+    //viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+    //  @Override
+    //  public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    //
+    //  }
+    //
+    //  @Override
+    //  public void onPageSelected(int position) {
+    //    HistoryFragment historyFragment=HistoryFragment.newInstance();
+    //    if (historyFragment!=null){
+    //      historyFragment.refresh();
+    //    }
+    //  }
+    //
+    //  @Override
+    //  public void onPageScrollStateChanged(int state) {
+    //
+    //  }
+    //});
 
 
     androidDrawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -157,20 +158,9 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     return super.onOptionsItemSelected(item);
   }
 
-
-
-  @Override
-  public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-  }
-
-  @Override
-  public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-  }
-
-  @Override
-  public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+  @Override public void refreshList() {
+    Fragment fragment=mAdapter.getFragment(1);
+    ((HistoryFragment) fragment).refresh();
 
   }
 

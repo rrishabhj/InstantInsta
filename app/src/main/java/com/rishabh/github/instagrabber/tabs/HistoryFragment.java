@@ -59,9 +59,7 @@ public class HistoryFragment extends Fragment implements MainActivity.FragmentRe
 		dbcon = new DBController(mContext);
 
 		rvInsta= (RecyclerView) rootView.findViewById(R.id.rvInstaImages);
-		ArrayList<InstaImage> list=dbcon.getAllInstaImages();
-		imageRecyclerAdaptor = new ImageRecyclerAdaptor(list,mContext);
-
+		imageRecyclerAdaptor = new ImageRecyclerAdaptor(mContext);
 		rvInsta.setAdapter(imageRecyclerAdaptor);
 		rvInsta.setLayoutManager(new LinearLayoutManager(mContext));
 
@@ -71,19 +69,14 @@ public class HistoryFragment extends Fragment implements MainActivity.FragmentRe
 		rvInsta.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 		//rvInsta.s/
 
+
 		imageRecyclerAdaptor.notifyDataSetChanged();
 		return rootView;
 	}
 
-
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-	}
-
 	@Override public void refresh() {
 		if (imageRecyclerAdaptor!=null) {
-			imageRecyclerAdaptor.notifyDataSetChanged();
+			imageRecyclerAdaptor.onRefreshh();
 		}
 	}
 }

@@ -6,13 +6,20 @@
     android:layout_height="match_parent"
     xmlns:custom="http://schemas.android.com/tools"
     android:layout_marginTop="12dp"
-    android:layout_margin="8dp"
     >
 <LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:layout_margin="12dp"
+      >
   <android.support.design.widget.TextInputLayout
       android:id="@+id/input_layout_url"
       android:layout_width="match_parent"
@@ -57,6 +64,7 @@
         />
   </LinearLayout>
 
+    </LinearLayout>
   <TextView
       android:text="File Saved To InstaGrabber/download"
       android:layout_width="match_parent"
@@ -81,7 +89,7 @@
 
       <FrameLayout
           android:layout_width="match_parent"
-          android:layout_height="282dp"
+          android:layout_height="384dp"
           >
 
 
@@ -90,9 +98,9 @@
              android:id="@+id/ivImage"
           android:src="@drawable/imageinsta"
           android:layout_width="match_parent"
-          android:layout_height="252dp"
-          android:scaleType="fitXY"
-          />
+             android:scaleType="fitXY"
+             android:layout_height="352dp"
+             />
         <com.github.lzyzsd.circleprogress.DonutProgress
             android:layout_marginLeft="14dp"
             android:id="@+id/donut_progress"
@@ -105,7 +113,7 @@
             />
         <RelativeLayout
              android:layout_width="match_parent"
-             android:layout_height="252dp"
+             android:layout_height="wrap_content"
              android:scaleType="fitXY"
              android:id="@+id/image"
              >
@@ -152,12 +160,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
-            android:layout_margin="14dp"
             app:backgroundTint="@color/colorAccent"
             android:src="@drawable/ic_action_download"
             app:borderWidth="0dp"
             app:elevation="6dp"
             app:fabSize="normal"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="14dp"
             />
       </FrameLayout>
 
@@ -172,7 +181,6 @@
           android:text="lorum aefaf aefai fae faoieuf aeof asadfafmasfiamsofmaofmaaasfckasflaniifoaoaridhabh asidnad anwid aniwd naiw dnai dna nda a"
           android:paddingBottom="4dp"
           android:ellipsize="end"
-          android:maxLines="3"
           android:textColor="#000000"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
