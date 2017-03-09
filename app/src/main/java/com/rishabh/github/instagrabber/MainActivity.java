@@ -1,6 +1,8 @@
 package com.rishabh.github.instagrabber;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -15,6 +17,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements
   private void initNavDrawerToggel() {
 
     toolbar = (Toolbar) findViewById(R.id.toolbar);
+
     setSupportActionBar(toolbar);
     //toolbar.setTitle("InstaGrabber");
 
@@ -70,27 +75,6 @@ public class MainActivity extends AppCompatActivity implements
     tabLayout.addTab(tabLayout.newTab().setText("History"));
 
     tabLayout.setupWithViewPager(viewPager);
-
-    //viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-    //  @Override
-    //  public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    //
-    //  }
-    //
-    //  @Override
-    //  public void onPageSelected(int position) {
-    //    HistoryFragment historyFragment=HistoryFragment.newInstance();
-    //    if (historyFragment!=null){
-    //      historyFragment.refresh();
-    //    }
-    //  }
-    //
-    //  @Override
-    //  public void onPageScrollStateChanged(int state) {
-    //
-    //  }
-    //});
-
 
     androidDrawerLayout.addDrawerListener(actionBarDrawerToggle);
     navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -151,13 +135,32 @@ public class MainActivity extends AppCompatActivity implements
       return true;
     }
 
-        /*
+    /*
          * if you have other menu items in your activity/toolbar
          * handle them here and return true
-         */
-    return super.onOptionsItemSelected(item);
-  }
+     */
 
+    switch (item.getItemId()) {
+      case R.id.instalogo:
+
+        callInstagram();
+
+        return true;
+      default:
+        return super.onOptionsItemSelected(item);
+    }
+
+  }
+  private void callInstagram() {
+    String apppackage = "com.instagram.android";
+    try {
+      Intent i = getPackageManager().getLaunchIntentForPackage(apppackage);
+      startActivity(i);
+    } catch (Exception  e) {
+      Toast.makeText(this, "Sorry, Instagram Apps Not Found", Toast.LENGTH_LONG).show();
+    }
+
+  }
   @Override public void refreshList() {
     Fragment fragment=mAdapter.getFragment(1);
     ((HistoryFragment) fragment).refresh();
@@ -168,4 +171,10 @@ public class MainActivity extends AppCompatActivity implements
       void refresh();
   }
 
+  @Override public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.main_menu, menu);
+    return true;
+
+  }
 }

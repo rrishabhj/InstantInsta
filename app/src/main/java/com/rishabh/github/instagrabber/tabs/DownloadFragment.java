@@ -120,7 +120,7 @@ public class DownloadFragment extends Fragment {
 				String a = clipboard.getText().toString();
 				Toast.makeText(mContext,"Copy:\n"+a,Toast.LENGTH_LONG).show();
 
-				
+
 				DownloadFileFromURL downloadFileFromURL=new DownloadFileFromURL();
 
 				//first perform check whether it is a valid URL
