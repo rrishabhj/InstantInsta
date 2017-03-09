@@ -26,6 +26,10 @@
         android:label="@string/title_activity_image_viewer"
         android:theme="@style/FullscreenTheme">
     </activity>
+    <activity android:name=".WebViewActivity"
+        android:theme="@style/AppTheme.NoActionBar"
+        >
+    </activity>
   </application>
 
 </manifest>

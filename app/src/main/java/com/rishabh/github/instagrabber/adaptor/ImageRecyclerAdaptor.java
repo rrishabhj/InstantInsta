@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.rishabh.github.instagrabber.R;
+import com.rishabh.github.instagrabber.WebViewActivity;
 import com.rishabh.github.instagrabber.database.DBController;
 import com.rishabh.github.instagrabber.database.InstaImage;
 import java.io.File;
@@ -150,10 +151,10 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
 
             ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip;
-
+            String postURL;
             switch (item.getItemId()) {
               case R.id.menu_copyUrl:
-                String postURL= imageList.get(imageList.size()-1-position).get_instaImageURL();
+                postURL = imageList.get(imageList.size()-1-position).get_instaImageURL();
                 clip = ClipData.newPlainText("URL", postURL);
                 clipboard.setPrimaryClip(clip);
                 Toast.makeText(mContext,"Post Url:"+postURL,Toast.LENGTH_LONG).show();
@@ -173,6 +174,15 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
                 String postFileName= imageList.get(imageList.size()-1-position).get_name();
                 shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///sdcard/InstantInsta/"+postFileName));
                 mContext.startActivity(Intent.createChooser(shareIntent, "Share image using"));
+                return true;
+
+              case R.id.menu_post_insta:
+
+                Intent webActivity= new Intent(mContext, WebViewActivity.class);
+
+                postURL= imageList.get(imageList.size()-1-position).get_instaImageURL();
+                webActivity.putExtra("POST_URL", postURL);
+                mContext.startActivity(webActivity);
                 return true;
               default:
                 return false;
