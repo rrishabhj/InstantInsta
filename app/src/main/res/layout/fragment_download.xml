@@ -94,6 +94,7 @@
 
 
 
+
          <ImageView
              android:id="@+id/ivImage"
           android:src="@drawable/imageinsta"
@@ -101,6 +102,8 @@
              android:scaleType="fitXY"
              android:layout_height="352dp"
              />
+
+
         <com.github.lzyzsd.circleprogress.DonutProgress
             android:layout_marginLeft="14dp"
             android:id="@+id/donut_progress"
@@ -110,6 +113,7 @@
             android:visibility="gone"
             android:layout_width="104dp"
             android:layout_height="104dp"
+            android:minWidth="5dp"
             />
 
         <RelativeLayout
@@ -123,23 +127,35 @@
            <LinearLayout
                android:orientation="horizontal"
                android:layout_width="match_parent"
-               android:layout_height="68dp"
                android:layout_alignParentBottom="true"
                android:layout_alignParentLeft="true"
                android:layout_alignParentStart="true"
-
-               android:background="#33FFFFFF"
+               android:id="@+id/llDownloadLayout"
+               android:background="#112233"
+               android:layout_height="48dp"
+               android:gravity="center_vertical"
                >
 
-             <!--<TextView-->
-                 <!--android:text="CANCEL"-->
-                 <!--android:layout_width="wrap_content"-->
-                 <!--android:layout_height="wrap_content"-->
-                 <!--android:textSize="14dp"-->
-                 <!--android:textColor="#FFFF00"-->
-                 <!--android:layout_gravity="center"-->
-                 <!--android:id="@+id/textView"-->
-                 <!--/>-->
+
+             <TextView
+                 android:text="0%"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:textSize="14dp"
+                 android:textColor="#ff0004"
+                 android:id="@+id/tvProgress"
+                 android:layout_margin="8dp"
+                 />
+             <TextView
+                 android:id="@+id/tvCancel"
+                 android:text="Cancel"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:layout_margin="8dp"
+                 android:textSize="14dp"
+                 android:textColor="#ff0004"
+                 />
 
              <!--<TextView-->
                  <!--android:text="1 task left"-->
@@ -180,6 +196,17 @@
             app:fabSize="normal"
             android:layout_marginTop="30dp"
             android:layout_marginRight="14dp"
+            android:layout_marginBottom="25dp"
+            />
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:id="@+id/progressBar"
+            android:max="100"
+            android:layout_marginTop="-10dp"
+            android:background="#ff0000"
+            android:elevation="2dp"
             />
       </FrameLayout>
 

@@ -24,6 +24,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.github.lzyzsd.circleprogress.DonutProgress;
@@ -39,6 +42,7 @@ import com.rishabh.github.instagrabber.R;
 import com.rishabh.github.instagrabber.database.DBController;
 import com.rishabh.github.instagrabber.database.InstaImage;
 import com.rishabh.github.instagrabber.service.DownloadService;
+import com.rishabh.github.instagrabber.service.FileDownloaderService;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,6 +58,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static com.rishabh.github.instagrabber.service.FileDownloaderService.RESPONSE_DOWNLOAD_PROGRESS;
 
 public class DownloadFragment extends Fragment {
 
@@ -70,9 +75,15 @@ public class DownloadFragment extends Fragment {
 	//DB
 	private DBController dbcon;
 	private Activity activity;
+	ProgressBar mProgressBar;
 
 	DownloadService mService;
 	boolean mBound = false;
+	TextView tvProgress;
+	LinearLayout llDownloadLayout;
+
+	String mPreviousText="";
+	private int progress;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,6 +108,10 @@ public class DownloadFragment extends Fragment {
 
 		ivPlayBtn.setVisibility(View.INVISIBLE);
 		clipBoard = (ClipboardManager)mContext.getSystemService(CLIPBOARD_SERVICE);
+		mProgressBar= (ProgressBar) rootView.findViewById(R.id.progressBar);
+		tvProgress = (TextView) rootView.findViewById(R.id.tvProgress);
+
+		llDownloadLayout = (LinearLayout) rootView.findViewById(R.id.llDownloadLayout);
 
 		Intent intent = new Intent(mContext, DownloadService.class);
 		mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -124,9 +139,12 @@ public class DownloadFragment extends Fragment {
 
 		fabDownload.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View view) {
-				new DownloadFileFromURL().execute(etURL.getText().toString());
+
+				FileDownloaderService.startAction(mContext,etURL.getText().toString(),new imageDownloadReceiver(new Handler()));
+				//new DownloadFileFromURL().execute(etURL.getText().toString());
 			}
 		});
+
 
 		final ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
 		clipboard.addPrimaryClipChangedListener( new ClipboardManager.OnPrimaryClipChangedListener() {
@@ -134,23 +152,89 @@ public class DownloadFragment extends Fragment {
 				String a = clipboard.getText().toString();
 				Toast.makeText(mContext,"Copy:\n"+a,Toast.LENGTH_LONG).show();
 
+				if(mPreviousText.equals(a)) {
+					return;
+				}else{
 
-				//DownloadFileFromURL downloadFileFromURL=new DownloadFileFromURL();
+					//File direct = new File(Environment.getExternalStorageDirectory() + "/InstantInsta.mp4");
 
+					Handler handler= new Handler();
+					imageDownloadReceiver imageDownloadReceiver=new imageDownloadReceiver(handler);
+					FileDownloaderService.startAction(mContext, a , imageDownloadReceiver);
 
-
-				//first perform check whether it is a valid URL
-				//TODO
-				mService.downloadAsynFile(a);
-
-
-				//Toast.makeText(mContext,"Clip: "+ a , Toast.LENGTH_LONG).show();
-				//downloadFileFromURL.execute(a);
+					//mService.downloadAsynFile(a);
+					mPreviousText = a;
+				}
 			}
-		});
+		}
+		);
 
 		return rootView;
 	}
+
+
+	public class imageDownloadReceiver extends ResultReceiver
+	{
+
+		public imageDownloadReceiver(Handler handler)
+		{
+			super(handler);
+		}
+
+		@Override
+		protected void onReceiveResult(int resultCode, Bundle resultData)
+		{
+			super.onReceiveResult(resultCode, resultData);
+			switch (resultCode)
+			{
+				case FileDownloaderService.RESPONSE_CODE_DOWNLOAD_RESULT:
+					String outFilePath = resultData
+							.getString(FileDownloaderService.ARGUMENT_TARGET_FILE);
+					if (outFilePath != null)
+					{
+						// outFilePath contains path of downloaded file. Do whatever you want to do with it.
+
+						llDownloadLayout.setVisibility(View.GONE);
+						mProgressBar.setVisibility(View.GONE);
+						((OnPostDownload) activity).refreshList();
+								System.out.println("Downloaded " + outFilePath);
+					}else {
+						System.out.println("Failed");
+					}
+					break;
+
+				case FileDownloaderService.RESPONSE_CODE_DOWNLOAD_PROGRESS:
+
+					progress=0;
+					progress = resultData.getInt(RESPONSE_DOWNLOAD_PROGRESS);
+
+					System.out.println("Progress:"+ progress);
+
+
+					//circularProgress.setVisibility(View.VISIBLE);
+					//circularProgress.setText( progress+ "%");
+					//circularProgress.setDonut_progress(progress+"");
+
+					llDownloadLayout.setVisibility(View.VISIBLE);
+					tvProgress.setVisibility(View.VISIBLE);
+					tvProgress.setText(progress +"%");
+					mProgressBar.setMax(100);
+					mProgressBar.setProgress(progress);
+					mProgressBar.setProgress(0);
+					//mProgressBar.post(new Runnable() {
+					//	@Override public void run() {
+					//		mProgressBar.setProgress(progress);
+					//	}
+					//});
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+
+
 
 
 	/**
@@ -159,7 +243,7 @@ public class DownloadFragment extends Fragment {
 
 	// Flag if receiver is registered
 	private boolean mReceiversRegistered = false;
-	// Define a handler and a broadcast receiver
+	// Defiine a handler and a broadcast receiver
 	private final Handler mHandler = new Handler();
 
 
@@ -168,15 +252,34 @@ public class DownloadFragment extends Fragment {
 		public void onReceive(Context context, Intent intent) {
 			if(intent.getAction().equals(DownloadService.CUSTOM_INTENT)) {
 
-				if (intent.getFlags()!=100) {
+				if (intent.getFlags()<100) {
 					circularProgress.setVisibility(View.VISIBLE);
 					circularProgress.setText(intent.getFlags() + "%");
 					circularProgress.setDonut_progress(intent.getFlags() + "");
 					circularProgress.setMax(100);
 				}else{
 						circularProgress.setVisibility(View.GONE);
-				}
+						//mService.stopSelf();
+						((OnPostDownload) activity).refreshList();
+						String filePath=intent.getStringExtra("URL");
 
+					if (filePath!=null){
+
+						String extension = "";
+
+						// recognizing weather its a image or video from file format
+						int i = filePath.lastIndexOf('.');
+						extension = filePath.substring(i + 1);
+
+						if (extension.equalsIgnoreCase("mp4")) {
+							Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(filePath, MediaStore.Images.Thumbnails.MINI_KIND);
+							ivImage.setImageBitmap(thumbnail);
+							//ivPlayBtn.setVisibility(View.VISIBLE);
+						} else {
+							ivImage.setImageDrawable(Drawable.createFromPath(filePath));
+						}
+					}
+				}
 				}
 		}
 	};
@@ -229,6 +332,10 @@ public class DownloadFragment extends Fragment {
 			mBound = false;
 		}
 
+		if(mReceiversRegistered) {
+			mContext.unregisterReceiver(mIntentReceiver);
+			mReceiversRegistered = false;
+		}
 	}
 
 	/**
@@ -419,7 +526,7 @@ public class DownloadFragment extends Fragment {
 
 				//generate a unique name
 
-				SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-mm-dd-hh:mm:ss");
+				SimpleDateFormat simpleDateFormat= new SimpleDateFormat("yyyy-mm-dd-hh-mm-ss");
 				//File myFile = null;
 
 

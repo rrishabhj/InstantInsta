@@ -23,6 +23,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -37,6 +39,7 @@ public class DownloadService extends Service {
   private boolean type;
   // Binder given to clients
   private final IBinder mBinder = new LocalBinder();
+  String pattern = "https://www.instagram.com/p/.";
 
 
   @Nullable @Override public IBinder onBind(Intent intent) {
@@ -51,7 +54,7 @@ public class DownloadService extends Service {
     }
   }
 
-  private class DownloadFile extends AsyncTask<String, Integer, String> {
+  private class DownloadFile extends AsyncTask<String, String, String> {
 
     @Override protected void onPreExecute() {
       super.onPreExecute();
@@ -124,7 +127,7 @@ public class DownloadService extends Service {
 
         //generate a unique name
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd-hh:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd-hh-mm-ss");
         //File myFile = null;
 
         // Output stream to write file
@@ -153,13 +156,13 @@ public class DownloadService extends Service {
 
         byte data[] = new byte[1024];
 
-        int total = 0;
+        long total = 0;
 
         while ((count = input.read(data)) != -1) {
           total += count;
           // publishing the progress....
           // After this onProgressUpdate will be called
-          publishProgress((total * 100) / lenghtOfFile);
+          publishProgress(""+((total * 100) / lenghtOfFile));
 
           // writing data to file
           output.write(data, 0, count);
@@ -188,13 +191,41 @@ public class DownloadService extends Service {
       return null;
     }
 
-    @Override protected void onProgressUpdate(Integer... progress) {
+    @Override protected void onProgressUpdate(String... progress) {
       Intent i = new Intent();
       i.setAction(CUSTOM_INTENT);
-      i.setFlags(progress[0]);
+      i.putExtra("PROGRESS",progress[0]);
       ctx.sendBroadcast(i);
     }
+
+    @Override protected void onPostExecute(String s) {
+      super.onPostExecute(s);
+
+      Intent i = new Intent();
+      i.setAction(CUSTOM_INTENT);
+      i.putExtra("URL", s);
+      ctx.sendBroadcast(i);
+      stopSelf();
+    }
+
+    boolean checkURL(String url){
+
+      Pattern r = Pattern.compile(pattern);
+
+      // Now create matcher object.
+      Matcher m = r.matcher("https://www.google.com");
+      if (m.find( )) {
+        System.out.println("Found value: " + m.group(0) );
+        return true;
+      }else {
+        System.out.println("NO MATCH");
+        return false;
+      }
+    }
   }
+
+
+
 
   public static final String CUSTOM_INTENT = "es.tempos21.sync.client.ProgressReceiver";
 

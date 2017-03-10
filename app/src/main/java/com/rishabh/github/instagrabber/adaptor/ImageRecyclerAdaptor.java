@@ -245,6 +245,8 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
     }
   }
 
+
+  // to make gallery aware of the new image
   public void callBroadCast() {
     if (Build.VERSION.SDK_INT >= 14) {
       Log.e("-->", " >= 14");
