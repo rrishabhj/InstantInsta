@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.bumptech.glide.Glide;
 import com.rishabh.github.instagrabber.R;
 import com.rishabh.github.instagrabber.WebViewActivity;
 import com.rishabh.github.instagrabber.database.DBController;
@@ -78,18 +79,33 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
     if(imgFile.exists()){
 
       // recognizing weather its a image or video from file format
-      int i = instaImage.get_name().lastIndexOf('.');
-      extension = instaImage.get_name().substring(i + 1);
+        int i = instaImage.get_name().lastIndexOf('.');
+        extension = instaImage.get_name().substring(i + 1);
 
       if (extension.equalsIgnoreCase("mp4")) {
-        Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(imgFile.getAbsolutePath(), MediaStore.Images.Thumbnails.MINI_KIND);
-        holder.imageView.setImageBitmap(thumbnail);
+
+        Glide.with(mContext)
+            .load(imgFile.getAbsoluteFile())
+            .asBitmap()
+            .placeholder(R.drawable.ic_insta_128)
+            .into(holder.imageView);
+
+        //Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(imgFile.getAbsolutePath(), MediaStore.Images.Thumbnails.MINI_KIND);
+        //holder.imageView.setImageBitmap(thumbnail);
         holder.ivItemPlay.setVisibility(View.VISIBLE);
       } else {
 
-        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-        holder.imageView.setImageBitmap(myBitmap);
-        holder.ivItemPlay.setVisibility(View.INVISIBLE);
+
+        File file = new File(imgFile.getAbsolutePath());
+        Uri imageUri = Uri.fromFile(file);
+
+        Glide.with(mContext)
+            .load(imageUri)
+            .into(holder.imageView);
+
+        //Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        //holder.imageView.setImageBitmap(myBitmap);
+        holder.ivItemPlay.setVisibility(View.GONE);
       }
 
 

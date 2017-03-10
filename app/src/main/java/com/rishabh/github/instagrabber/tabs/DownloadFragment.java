@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,6 +37,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.lzyzsd.circleprogress.DonutProgress;
 import com.rishabh.github.instagrabber.MainActivity;
 import com.rishabh.github.instagrabber.R;
@@ -59,6 +62,7 @@ import org.jsoup.nodes.Document;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.rishabh.github.instagrabber.service.FileDownloaderService.RESPONSE_DOWNLOAD_PROGRESS;
+import static com.rishabh.github.instagrabber.service.FileDownloaderService.RESPONSE_TYPE;
 
 public class DownloadFragment extends Fragment {
 
@@ -79,7 +83,7 @@ public class DownloadFragment extends Fragment {
 
 	DownloadService mService;
 	boolean mBound = false;
-	TextView tvProgress;
+	TextView tvProgress,tvCancel;
 	LinearLayout llDownloadLayout;
 
 	String mPreviousText="";
@@ -110,6 +114,7 @@ public class DownloadFragment extends Fragment {
 		clipBoard = (ClipboardManager)mContext.getSystemService(CLIPBOARD_SERVICE);
 		mProgressBar= (ProgressBar) rootView.findViewById(R.id.progressBar);
 		tvProgress = (TextView) rootView.findViewById(R.id.tvProgress);
+		tvCancel= (TextView) rootView.findViewById(R.id.tvCancel);
 
 		llDownloadLayout = (LinearLayout) rootView.findViewById(R.id.llDownloadLayout);
 
@@ -190,14 +195,44 @@ public class DownloadFragment extends Fragment {
 				case FileDownloaderService.RESPONSE_CODE_DOWNLOAD_RESULT:
 					String outFilePath = resultData
 							.getString(FileDownloaderService.ARGUMENT_TARGET_FILE);
+					String caption =resultData.getString(FileDownloaderService.RESPONSE_CAPTION);
 					if (outFilePath != null)
 					{
 						// outFilePath contains path of downloaded file. Do whatever you want to do with it.
 
-						llDownloadLayout.setVisibility(View.GONE);
 						mProgressBar.setVisibility(View.GONE);
+
+
+
+						int i = outFilePath.lastIndexOf('.');
+						String extension = outFilePath.substring(i + 1);
+
+						if (extension.equalsIgnoreCase("mp4")) {
+							Glide.with(mContext)
+									.load(outFilePath)
+									.asBitmap()
+									.placeholder(R.drawable.ic_insta_128)
+									.into(ivImage);
+							ivPlayBtn.setVisibility(View.VISIBLE);
+						} else {
+
+							ivPlayBtn.setVisibility(View.GONE);
+							File file = new File(outFilePath);
+							Uri imageUri = Uri.fromFile(file);
+
+							Glide.with(mContext)
+									.load(imageUri)
+									.into(ivImage);
+						}
+						tvCaption.setText(caption+"");
+
+						tvProgress.setVisibility(View.GONE);
+						tvCancel.setVisibility(View.GONE);
 						((OnPostDownload) activity).refreshList();
 								System.out.println("Downloaded " + outFilePath);
+
+						//removing 100% and cancel
+
 					}else {
 						System.out.println("Failed");
 					}
@@ -207,6 +242,13 @@ public class DownloadFragment extends Fragment {
 
 					progress=0;
 					progress = resultData.getInt(RESPONSE_DOWNLOAD_PROGRESS);
+
+					//String extension=resultData.getString(RESPONSE_TYPE);
+					//if (extension.equalsIgnoreCase("mp4")){
+					//	ivPlayBtn.setVisibility(View.VISIBLE);
+					//}else {
+					//	ivPlayBtn.setVisibility(View.GONE);
+					//}
 
 					System.out.println("Progress:"+ progress);
 
@@ -218,6 +260,8 @@ public class DownloadFragment extends Fragment {
 					llDownloadLayout.setVisibility(View.VISIBLE);
 					tvProgress.setVisibility(View.VISIBLE);
 					tvProgress.setText(progress +"%");
+
+					//progressbar not working
 					mProgressBar.setMax(100);
 					mProgressBar.setProgress(progress);
 					mProgressBar.setProgress(0);
@@ -226,6 +270,10 @@ public class DownloadFragment extends Fragment {
 					//		mProgressBar.setProgress(progress);
 					//	}
 					//});
+					//ivImage.setImageBitmap();
+
+
+
 					break;
 				default:
 					break;

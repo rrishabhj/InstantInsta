@@ -38,6 +38,8 @@ public class FileDownloaderService extends IntentService
 
   public static final int RESPONSE_CODE_DOWNLOAD_RESULT = 100;
   public static final int RESPONSE_CODE_DOWNLOAD_PROGRESS = 101;
+  public static final String RESPONSE_CAPTION = "caption";
+  public static final String RESPONSE_TYPE = "type";
   public static boolean stopDownload;
   private InstaImage instaImage;
   InputStream in;
@@ -46,6 +48,7 @@ public class FileDownloaderService extends IntentService
   private Context mContext;
 
   public static final String CUSTOM_INTENT = "es.tempos21.sync.client.ProgressReceiver";
+  //private String extension;
 
   public FileDownloaderService()
   {
@@ -114,6 +117,8 @@ public class FileDownloaderService extends IntentService
       instaImage.set_name(fileName);
       outputFilePath = downloadImage(file.getAbsolutePath());
 
+      //extension = "jpg";
+
     } else {
       fileName = "Insta-" + simpleDateFormat.format(new Date()) + ".mp4";
 
@@ -124,10 +129,12 @@ public class FileDownloaderService extends IntentService
       }
       instaImage.set_name(fileName);
       outputFilePath = downloadFile(file.getAbsolutePath(), receiver);
+      //extension = "mp4";
     }
 
     Bundle bundle = new Bundle();
     bundle.putString(RESPONSE_TARGET_FILE, outputFilePath);
+    bundle.putString(RESPONSE_CAPTION, instaImage.get_caption());
     receiver.send(RESPONSE_CODE_DOWNLOAD_RESULT, bundle);
 
   }
@@ -143,6 +150,7 @@ public class FileDownloaderService extends IntentService
     {
       Bundle bundle = new Bundle();
       bundle.putInt(RESPONSE_DOWNLOAD_PROGRESS, progress);
+      //bundle.putString(RESPONSE_TYPE,extension);
       receiver.send(RESPONSE_CODE_DOWNLOAD_PROGRESS, bundle);
     }
   }

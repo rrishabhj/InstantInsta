@@ -178,7 +178,7 @@
               android:layout_centerVertical="true"
               android:layout_centerHorizontal="true"
               android:elevation="15dp"
-              android:visibility="gone"
+              android:visibility="invisible"
 
 
               />
