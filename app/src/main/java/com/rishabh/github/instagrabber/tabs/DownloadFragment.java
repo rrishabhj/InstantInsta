@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -38,9 +39,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.github.lzyzsd.circleprogress.DonutProgress;
-import com.rishabh.github.instagrabber.MainActivity;
 import com.rishabh.github.instagrabber.R;
 import com.rishabh.github.instagrabber.database.DBController;
 import com.rishabh.github.instagrabber.database.InstaImage;
@@ -53,22 +52,21 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.rishabh.github.instagrabber.service.FileDownloaderService.RESPONSE_DOWNLOAD_PROGRESS;
-import static com.rishabh.github.instagrabber.service.FileDownloaderService.RESPONSE_TYPE;
 
 public class DownloadFragment extends Fragment {
 
 	DonutProgress circularProgress;
 	private FragmentActivity mContext;
-	private TextView tvCaption;
+	private TextView tvCaption,tvCopy;
 	private EditText etURL;
 	static ProgressDialog mProgressDialog = null;
 	Button btnCheckURL,btnPaste;
@@ -88,6 +86,7 @@ public class DownloadFragment extends Fragment {
 
 	String mPreviousText="";
 	private int progress;
+	String pattern = "https://www.instagram.com/p/.";
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,6 +99,7 @@ public class DownloadFragment extends Fragment {
 			Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_download, container, false);
+
 		circularProgress = (DonutProgress) rootView.findViewById(R.id.donut_progress);
 		tvCaption = (TextView)rootView.findViewById(R.id.tv_caption);
 		btnCheckURL= (Button) rootView.findViewById(R.id.btnCheckURL);
@@ -115,9 +115,11 @@ public class DownloadFragment extends Fragment {
 		mProgressBar= (ProgressBar) rootView.findViewById(R.id.progressBar);
 		tvProgress = (TextView) rootView.findViewById(R.id.tvProgress);
 		tvCancel= (TextView) rootView.findViewById(R.id.tvCancel);
+		tvCopy= (TextView) rootView.findViewById(R.id.tvCopy);
 
 		llDownloadLayout = (LinearLayout) rootView.findViewById(R.id.llDownloadLayout);
 
+		mContext.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 		Intent intent = new Intent(mContext, DownloadService.class);
 		mContext.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
@@ -150,6 +152,12 @@ public class DownloadFragment extends Fragment {
 			}
 		});
 
+		tvCopy.setOnClickListener(new View.OnClickListener() {
+			@Override public void onClick(View view) {
+				clipBoard.setPrimaryClip(ClipData.newPlainText("Caption", tvCaption.getText().toString()));
+			}
+		});
+
 
 		final ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
 		clipboard.addPrimaryClipChangedListener( new ClipboardManager.OnPrimaryClipChangedListener() {
@@ -159,16 +167,17 @@ public class DownloadFragment extends Fragment {
 
 				if(mPreviousText.equals(a)) {
 					return;
-				}else{
+				}else {
 
 					//File direct = new File(Environment.getExternalStorageDirectory() + "/InstantInsta.mp4");
 
-					Handler handler= new Handler();
-					imageDownloadReceiver imageDownloadReceiver=new imageDownloadReceiver(handler);
-					FileDownloaderService.startAction(mContext, a , imageDownloadReceiver);
-
-					//mService.downloadAsynFile(a);
-					mPreviousText = a;
+					if (checkURL(a)) {
+						Handler handler = new Handler();
+						imageDownloadReceiver imageDownloadReceiver = new imageDownloadReceiver(handler);
+						FileDownloaderService.startAction(mContext, a, imageDownloadReceiver);
+						//mService.downloadAsynFile(a);
+						mPreviousText = a;
+				}
 				}
 			}
 		}
@@ -708,6 +717,21 @@ public class DownloadFragment extends Fragment {
 	@Override public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		this.activity = activity;
+	}
+
+	boolean checkURL(String url){
+
+		Pattern r = Pattern.compile(pattern);
+
+		// Now create matcher object.
+		Matcher m = r.matcher(url);
+		if (m.find( )) {
+			System.out.println("Found value: " + m.group(0) );
+			return true;
+		}else {
+			System.out.println("NO MATCH");
+			return false;
+		}
 	}
 
 }
