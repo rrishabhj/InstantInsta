@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
@@ -26,6 +27,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.os.ResultReceiver;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.github.lzyzsd.circleprogress.DonutProgress;
+import com.rishabh.github.instagrabber.MainActivity;
 import com.rishabh.github.instagrabber.R;
 import com.rishabh.github.instagrabber.database.DBController;
 import com.rishabh.github.instagrabber.database.InstaImage;
@@ -99,16 +102,17 @@ public class DownloadFragment extends Fragment {
 			Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_download, container, false);
+		mContext =getActivity();
 
 		circularProgress = (DonutProgress) rootView.findViewById(R.id.donut_progress);
 		tvCaption = (TextView)rootView.findViewById(R.id.tv_caption);
+
 		btnCheckURL= (Button) rootView.findViewById(R.id.btnCheckURL);
 		etURL = (EditText) rootView.findViewById(R.id.edittxturl);
 		ivImage = (ImageView) rootView.findViewById(R.id.ivImage);
 		btnPaste = (Button) rootView.findViewById(R.id.btnPaste);
 		fabDownload = (FloatingActionButton) rootView.findViewById(R.id.fab);
 		ivPlayBtn = (ImageView) rootView.findViewById(R.id.ivPlayBtn);
-		mContext =getActivity();
 
 		ivPlayBtn.setVisibility(View.INVISIBLE);
 		clipBoard = (ClipboardManager)mContext.getSystemService(CLIPBOARD_SERVICE);
@@ -137,6 +141,7 @@ public class DownloadFragment extends Fragment {
 
 		btnPaste.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View view) {
+
 				ClipData clipData = clipBoard.getPrimaryClip();
 				ClipData.Item item = clipData.getItemAt(0);
 				String clipURL = item.getText().toString();
@@ -147,7 +152,21 @@ public class DownloadFragment extends Fragment {
 		fabDownload.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View view) {
 
-				FileDownloaderService.startAction(mContext,etURL.getText().toString(),new imageDownloadReceiver(new Handler()));
+				String link= etURL.getText().toString();
+				if (!dbcon.isURLPresent(link)) {
+
+					if (checkURL(link)) {
+
+						FileDownloaderService.startAction(mContext, etURL.getText().toString(), new imageDownloadReceiver(new Handler()));
+						Toast.makeText(mContext, "Post Already Downloaded", Toast.LENGTH_SHORT).show();
+						((MainActivity) activity).viewPager.setCurrentItem(1, true);
+					} else {
+						Toast.makeText(mContext, "Wrong URL", Toast.LENGTH_SHORT).show();
+					}
+				}else {
+					Toast.makeText(mContext, "Post Already Downloaded",Toast.LENGTH_SHORT).show();
+					((MainActivity)activity).viewPager.setCurrentItem(1, true);
+				}
 				//new DownloadFileFromURL().execute(etURL.getText().toString());
 			}
 		});
@@ -171,13 +190,19 @@ public class DownloadFragment extends Fragment {
 
 					//File direct = new File(Environment.getExternalStorageDirectory() + "/InstantInsta.mp4");
 
-					if (checkURL(a)) {
-						Handler handler = new Handler();
-						imageDownloadReceiver imageDownloadReceiver = new imageDownloadReceiver(handler);
-						FileDownloaderService.startAction(mContext, a, imageDownloadReceiver);
-						//mService.downloadAsynFile(a);
-						mPreviousText = a;
-				}
+					if (!dbcon.isURLPresent(a)) {
+
+						if (checkURL(a)) {
+							Handler handler = new Handler();
+							imageDownloadReceiver imageDownloadReceiver = new imageDownloadReceiver(handler);
+							FileDownloaderService.startAction(mContext, a, imageDownloadReceiver);
+							//mService.downloadAsynFile(a);
+							mPreviousText = a;
+						}
+					}else {
+							Toast.makeText(mContext, "Post Already Downloaded",Toast.LENGTH_SHORT).show();
+						((MainActivity)activity).viewPager.setCurrentItem(1, true);
+					}
 				}
 			}
 		}
@@ -229,11 +254,13 @@ public class DownloadFragment extends Fragment {
 							File file = new File(outFilePath);
 							Uri imageUri = Uri.fromFile(file);
 
-							Glide.with(mContext)
+							Glide.with(mContext.getApplicationContext())
 									.load(imageUri)
 									.into(ivImage);
+
 						}
-						tvCaption.setText(caption+"");
+
+						tvCaption.setText(Html.fromHtml(caption+""));
 
 						tvProgress.setVisibility(View.GONE);
 						tvCancel.setVisibility(View.GONE);
@@ -268,6 +295,7 @@ public class DownloadFragment extends Fragment {
 
 					llDownloadLayout.setVisibility(View.VISIBLE);
 					tvProgress.setVisibility(View.VISIBLE);
+					tvCancel.setVisibility(View.VISIBLE);
 					tvProgress.setText(progress +"%");
 
 					//progressbar not working
@@ -280,8 +308,6 @@ public class DownloadFragment extends Fragment {
 					//	}
 					//});
 					//ivImage.setImageBitmap();
-
-
 
 					break;
 				default:
@@ -476,7 +502,7 @@ public class DownloadFragment extends Fragment {
 		protected void onProgressUpdate(String... progress) {
 
 			if (progress[0]=="0") {
-				tvCaption.setText(progress[1]);
+				tvCaption.setText(Html.fromHtml(progress[1]+""));
 				dismissDialog();
 			}
 		}

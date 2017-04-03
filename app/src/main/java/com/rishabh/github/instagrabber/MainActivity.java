@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements
   NavigationView navigationView;
   Toolbar toolbar;
   TabLayout tabLayout;
-  private ViewPager viewPager;
+  public ViewPager viewPager;
   private TabsPagerAdapter mAdapter;
   private WebView webView;
 
