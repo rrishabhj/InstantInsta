@@ -32,6 +32,7 @@ import com.rishabh.github.instagrabber.R;
 import com.rishabh.github.instagrabber.WebViewActivity;
 import com.rishabh.github.instagrabber.database.DBController;
 import com.rishabh.github.instagrabber.database.InstaImage;
+import io.github.rockerhieu.emojicon.EmojiconTextView;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -253,12 +254,13 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
 
   public class ItemViewHolder extends RecyclerView.ViewHolder {
     ImageView imageView,ivSettings, ivItemPlay;
-    TextView tvCaption,tvRepost, tvDelete;
+    TextView tvRepost, tvDelete;
+    EmojiconTextView tvCaption;
 
     public ItemViewHolder(View itemView) {
       super(itemView);
       imageView = (ImageView) itemView.findViewById(R.id.imageView);
-      tvCaption = (TextView) itemView.findViewById(R.id.tvCaption);
+      tvCaption = (EmojiconTextView) itemView.findViewById(R.id.tvCaption);
       tvRepost = (TextView) itemView.findViewById(R.id.tvRepost);
       tvDelete = (TextView) itemView.findViewById(R.id.tvDelete);
 

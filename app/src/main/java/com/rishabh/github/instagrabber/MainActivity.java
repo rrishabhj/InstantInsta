@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.rishabh.github.instagrabber.adaptor.TabsPagerAdapter;
 import com.rishabh.github.instagrabber.tabs.DownloadFragment;
 import com.rishabh.github.instagrabber.tabs.HistoryFragment;
+import io.github.rockerhieu.emojicon.emoji.Emojicon;
 
 public class MainActivity extends AppCompatActivity implements
     DownloadFragment.OnPostDownload{
@@ -44,22 +45,14 @@ public class MainActivity extends AppCompatActivity implements
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-
     initNavDrawerToggel();
-
     Utilities.getStoragePermission(MainActivity.this);
-
   }
 
-
-
   private void initNavDrawerToggel() {
-
     toolbar = (Toolbar) findViewById(R.id.toolbar);
-
     setSupportActionBar(toolbar);
     //toolbar.setTitle("InstaGrabber");
-
 
     // Initilization
     viewPager = (ViewPager) findViewById(R.id.pager);
@@ -75,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements
     tabLayout.addTab(tabLayout.newTab().setText("History"));
 
     tabLayout.setupWithViewPager(viewPager);
+
+
 
     androidDrawerLayout.addDrawerListener(actionBarDrawerToggle);
     navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -92,17 +87,38 @@ public class MainActivity extends AppCompatActivity implements
         androidDrawerLayout.closeDrawers();
 
         switch (item.getItemId()) {
-          case R.id.nav_menu_item1:
-            Toast.makeText(MainActivity.this, "Item 1 Clicked", Toast.LENGTH_SHORT).show();
+          case R.id.navDownload:
+            TabLayout.Tab tab = tabLayout.getTabAt(0);
+            tab.select();
+
+            //Toast.makeText(MainActivity.this, "Item 1 Clicked", Toast.LENGTH_SHORT).show();
             break;
-          case R.id.nav_menu_item2:
-            Toast.makeText(MainActivity.this, "Item 2 Clicked", Toast.LENGTH_SHORT)
+          case R.id.navHistory:
+
+            TabLayout.Tab tab2 = tabLayout.getTabAt(1);
+            tab2.select();
+            //Toast.makeText(MainActivity.this, "Item 2 Clicked", Toast.LENGTH_SHORT).show();
+            break;
+          case R.id.navGuide:
+            Toast.makeText(MainActivity.this, "How To Download Post", Toast.LENGTH_SHORT)
                 .show();
             break;
-          case R.id.nav_menu_item3:
-            Toast.makeText(MainActivity.this, "Item 3 Clicked", Toast.LENGTH_SHORT)
-                .show();
+
+          case R.id.navShare:
+
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+
+            // todo enter app link here
+            sendIntent.putExtra(Intent.EXTRA_TEXT,
+                "Hey check out my app at: https://play.google.com/store/apps/details?");
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
+
+            //Toast.makeText(MainActivity.this, "Share", Toast.LENGTH_SHORT).show();
             break;
+
+
           default:
             break;
         }

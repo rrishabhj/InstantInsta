@@ -27,6 +27,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.os.ResultReceiver;
+import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,6 +49,7 @@ import com.rishabh.github.instagrabber.database.DBController;
 import com.rishabh.github.instagrabber.database.InstaImage;
 import com.rishabh.github.instagrabber.service.DownloadService;
 import com.rishabh.github.instagrabber.service.FileDownloaderService;
+import io.github.rockerhieu.emojicon.EmojiconTextView;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -63,13 +65,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static com.rishabh.github.instagrabber.R.id.cv_downloadView;
 import static com.rishabh.github.instagrabber.service.FileDownloaderService.RESPONSE_DOWNLOAD_PROGRESS;
 
 public class DownloadFragment extends Fragment {
 
 	DonutProgress circularProgress;
 	private FragmentActivity mContext;
-	private TextView tvCaption,tvCopy;
+	private TextView tvCopy;
 	private EditText etURL;
 	static ProgressDialog mProgressDialog = null;
 	Button btnCheckURL,btnPaste;
@@ -86,10 +89,13 @@ public class DownloadFragment extends Fragment {
 	boolean mBound = false;
 	TextView tvProgress,tvCancel;
 	LinearLayout llDownloadLayout;
+	CardView cvdownloadView;
 
 	String mPreviousText="";
 	private int progress;
 	String pattern = "https://www.instagram.com/p/.";
+
+	EmojiconTextView tvCaption;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,7 +111,7 @@ public class DownloadFragment extends Fragment {
 		mContext =getActivity();
 
 		circularProgress = (DonutProgress) rootView.findViewById(R.id.donut_progress);
-		tvCaption = (TextView)rootView.findViewById(R.id.tv_caption);
+		tvCaption = (EmojiconTextView) rootView.findViewById(R.id.tv_caption);
 
 		btnCheckURL= (Button) rootView.findViewById(R.id.btnCheckURL);
 		etURL = (EditText) rootView.findViewById(R.id.edittxturl);
@@ -120,6 +126,8 @@ public class DownloadFragment extends Fragment {
 		tvProgress = (TextView) rootView.findViewById(R.id.tvProgress);
 		tvCancel= (TextView) rootView.findViewById(R.id.tvCancel);
 		tvCopy= (TextView) rootView.findViewById(R.id.tvCopy);
+		cvdownloadView=(CardView)rootView.findViewById(R.id.cv_downloadView);
+
 
 		llDownloadLayout = (LinearLayout) rootView.findViewById(R.id.llDownloadLayout);
 
@@ -136,6 +144,7 @@ public class DownloadFragment extends Fragment {
 
 				//todo check using reg exp whether the url is correct
 					new ValidateFileFromURL().execute(etURL.getText().toString());
+
 			}
 		});
 
@@ -157,6 +166,7 @@ public class DownloadFragment extends Fragment {
 
 					if (checkURL(link)) {
 
+						cvdownloadView.setVisibility(View.VISIBLE);
 						FileDownloaderService.startAction(mContext, etURL.getText().toString(), new imageDownloadReceiver(new Handler()));
 						Toast.makeText(mContext, "Post Already Downloaded", Toast.LENGTH_SHORT).show();
 						((MainActivity) activity).viewPager.setCurrentItem(1, true);
@@ -231,7 +241,7 @@ public class DownloadFragment extends Fragment {
 							.getString(FileDownloaderService.ARGUMENT_TARGET_FILE);
 					String caption =resultData.getString(FileDownloaderService.RESPONSE_CAPTION);
 					if (outFilePath != null)
-					{
+					 {
 						// outFilePath contains path of downloaded file. Do whatever you want to do with it.
 
 						mProgressBar.setVisibility(View.GONE);
@@ -430,7 +440,7 @@ public class DownloadFragment extends Fragment {
 		protected void onPreExecute() {
 			super.onPreExecute();
 			showDialog(mContext);
-
+			cvdownloadView.setVisibility(View.VISIBLE);
 		}
 
 		@Override

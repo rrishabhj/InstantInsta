@@ -8,14 +8,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/navigation_header_image"/>
+        android:src="@color/insta_end"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="18dp"
-        android:text="Title"
+        android:text="InstantInsta"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textStyle="bold"/>
 

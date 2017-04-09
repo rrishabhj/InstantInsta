@@ -14,18 +14,25 @@
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
     <activity android:name=".MainActivity">
+
+    </activity>
+    <activity
+        android:name=".WebViewActivity"
+        android:theme="@style/AppTheme.NoActionBar">
+    </activity>
+
+    <service android:name=".service.DownloadService"/>
+    <service android:name=".service.FileDownloaderService"/>
+
+    <activity android:name=".SplashScreenActivity"
+        android:theme="@style/AppTheme.NoActionBar"
+        >
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
-    <activity android:name=".WebViewActivity"
-        android:theme="@style/AppTheme.NoActionBar"
-        >
-    </activity>
-    <service android:name=".service.DownloadService"/>
-    <service android:name=".service.FileDownloaderService"/>
   </application>
 
 </manifest>

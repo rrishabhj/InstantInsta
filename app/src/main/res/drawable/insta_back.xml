@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <shape xmlns:android="http://schemas.android.com/apk/res/android"
+      android:shape="rectangle">
+    <gradient
+        android:startColor="@color/insta_start"
+    android:endColor="@color/insta_end"
+    android:angle="-270" />
+  </shape>
+
+</selector>

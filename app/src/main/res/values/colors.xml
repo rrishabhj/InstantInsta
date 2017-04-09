@@ -5,5 +5,8 @@
   <color name="colorAccent">#3a3a3a</color>
 
   <color name="black_overlay">#66000000</color>
+  <color name="insta_start">#e6683c</color>
+  <color name="insta_end">#f60429</color>
+
 
 </resources>
