@@ -17,6 +17,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -46,12 +47,15 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
   //DB
   private DBController dbcon;
   private String extension;
+  private int mExpandedPosition=-1;
+  //private RecyclerView recyclerView;
 
   public ImageRecyclerAdaptor() {
   }
 
   public ImageRecyclerAdaptor( Context context) {
     mContext=context;
+    //recyclerView =mRecyclerView;
     dbcon = new DBController(mContext);
     imageList = dbcon.getAllInstaImages();
   }
@@ -111,6 +115,23 @@ public class ImageRecyclerAdaptor  extends RecyclerView.Adapter<ImageRecyclerAda
 
       //Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
       //holder.imageView.setImageBitmap(myBitmap);
+
+
+      final boolean isExpanded = position== mExpandedPosition;
+
+      if (isExpanded) {
+        holder.tvCaption.setMaxLines(Integer.MAX_VALUE);
+      }else{
+        holder.tvCaption.setMaxLines(3);
+      }
+
+      holder.tvCaption.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View view) {
+          mExpandedPosition = isExpanded ? -1:position;
+
+          notifyDataSetChanged();
+        }
+      });
     }
 
     holder.tvCaption.setText(instaImage.get_caption());
