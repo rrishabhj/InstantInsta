@@ -4,17 +4,13 @@
     <group android:checkableBehavior="all">
         <item
             android:id="@+id/navDownload"
-            android:icon="@android:drawable/ic_dialog_map"
+            android:icon="@drawable/ic_download"
             android:title="Download"/>
         <item
             android:id="@+id/navHistory"
             android:icon="@android:drawable/btn_star_big_on"
             android:title="History"/>
 
-        <item
-            android:id="@+id/navGuide"
-            android:icon="@drawable/ic_guide"
-            android:title="How To"/>
         <item
             android:id="@+id/navShare"
             android:icon="@android:drawable/ic_menu_share"

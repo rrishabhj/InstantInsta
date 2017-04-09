@@ -75,7 +75,7 @@ public class DownloadFragment extends Fragment {
 	private TextView tvCopy;
 	private EditText etURL;
 	static ProgressDialog mProgressDialog = null;
-	Button btnCheckURL,btnPaste;
+	Button btnCheckURL,btnPaste,btnguide;
 	ImageView ivImage, ivPlayBtn;
 	private ClipboardManager clipBoard;
 	private boolean type;
@@ -89,13 +89,14 @@ public class DownloadFragment extends Fragment {
 	boolean mBound = false;
 	TextView tvProgress,tvCancel;
 	LinearLayout llDownloadLayout;
-	CardView cvdownloadView;
+	CardView cvdownloadView,cvGuide;
 
 	String mPreviousText="";
 	private int progress;
 	String pattern = "https://www.instagram.com/p/.";
 
 	EmojiconTextView tvCaption;
+	private boolean isGuideVisible=false;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -117,6 +118,8 @@ public class DownloadFragment extends Fragment {
 		etURL = (EditText) rootView.findViewById(R.id.edittxturl);
 		ivImage = (ImageView) rootView.findViewById(R.id.ivImage);
 		btnPaste = (Button) rootView.findViewById(R.id.btnPaste);
+		btnguide=  (Button) rootView.findViewById(R.id.btnguide);
+
 		fabDownload = (FloatingActionButton) rootView.findViewById(R.id.fab);
 		ivPlayBtn = (ImageView) rootView.findViewById(R.id.ivPlayBtn);
 
@@ -127,6 +130,8 @@ public class DownloadFragment extends Fragment {
 		tvCancel= (TextView) rootView.findViewById(R.id.tvCancel);
 		tvCopy= (TextView) rootView.findViewById(R.id.tvCopy);
 		cvdownloadView=(CardView)rootView.findViewById(R.id.cv_downloadView);
+		cvGuide= (CardView) rootView.findViewById(R.id.cvGuide);
+
 
 
 		llDownloadLayout = (LinearLayout) rootView.findViewById(R.id.llDownloadLayout);
@@ -137,6 +142,19 @@ public class DownloadFragment extends Fragment {
 
 		//DB
 		dbcon = new DBController(mContext);
+
+		btnguide.setOnClickListener(new View.OnClickListener() {
+			@Override public void onClick(View view) {
+
+				if (isGuideVisible) {
+					cvGuide.setVisibility(View.GONE);
+					isGuideVisible= false;
+				} else {
+					cvGuide.setVisibility(View.VISIBLE);
+					isGuideVisible=true;
+				}
+			}
+		});
 
 
 		btnCheckURL.setOnClickListener(new View.OnClickListener() {

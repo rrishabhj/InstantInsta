@@ -99,11 +99,6 @@ public class MainActivity extends AppCompatActivity implements
             tab2.select();
             //Toast.makeText(MainActivity.this, "Item 2 Clicked", Toast.LENGTH_SHORT).show();
             break;
-          case R.id.navGuide:
-            Toast.makeText(MainActivity.this, "How To Download Post", Toast.LENGTH_SHORT)
-                .show();
-            break;
-
           case R.id.navShare:
 
             Intent sendIntent = new Intent();
@@ -114,11 +109,8 @@ public class MainActivity extends AppCompatActivity implements
                 "Hey check out my app at: https://play.google.com/store/apps/details?");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
-
             //Toast.makeText(MainActivity.this, "Share", Toast.LENGTH_SHORT).show();
             break;
-
-
           default:
             break;
         }
