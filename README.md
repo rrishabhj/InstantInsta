@@ -8,10 +8,12 @@ This is a android application to download and manage instagram Images, Videos wi
 
 ## Screenshots
 
-![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-003937.png =720x1024)
-![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-004023.png =720x1024)
-![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-004623.png =720x1024)
+![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-003937.png =720x1024)  
+
+![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-004023.png =720x1024)  
+
+![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-004623.png =720x1024)  
 
 ## Libraries Used
-  -Jsoup
-  -Glide
+  -Jsoup  
+  -Glide  
