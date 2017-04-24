@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements
 
             // todo enter app link here
             sendIntent.putExtra(Intent.EXTRA_TEXT,
-                "Hey check out my app at: https://play.google.com/store/apps/details?");
+                "Hey check out my app at: https://play.google.com/store/apps/details?id=com.rishabh.github.instantinsta");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
             //Toast.makeText(MainActivity.this, "Share", Toast.LENGTH_SHORT).show();
