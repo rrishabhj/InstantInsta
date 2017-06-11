@@ -471,8 +471,8 @@ public class DownloadFragment extends Fragment {
 				type = false;
 
 				//for caption
-				int indexcaption = html.indexOf("\"caption\"");
-				indexcaption += 9;
+				int indexcaption = html.indexOf("edge_media_to_caption");
+				indexcaption += 53;
 
 				int startCaption = html.indexOf("\"", indexcaption);
 				startCaption += 1;
@@ -500,7 +500,7 @@ public class DownloadFragment extends Fragment {
 				}
 
 				//for image url
-				int index = html.indexOf("display_src");
+				int index = html.indexOf("display_url");
 				index += 13;
 				int start = html.indexOf("\"", index);
 				start += 1;

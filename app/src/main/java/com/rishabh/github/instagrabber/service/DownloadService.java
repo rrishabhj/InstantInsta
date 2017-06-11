@@ -83,20 +83,22 @@ public class DownloadService extends Service {
 
         urlVid = html.substring(startVid, endVid);
 
-        if (urlVid.equalsIgnoreCase("en")) {
+        if (true) {
           //
           //	url = new URL(urlVid);
           //	type =false;
           //}else {
-          // for image url
 
-          int index = html.indexOf("display_src");
+
+          // for image url
+          int index = html.indexOf("display_url");
           index += 13;
           int start = html.indexOf("\"", index);
           start += 1;
           int end = html.indexOf("\"", start);
           //                System.out.println("start:"+start+ "end:"+ end);
           String urlImage = html.substring(start, end);
+
           type = false;
           url = new URL(urlImage);
         } else {
@@ -108,8 +110,8 @@ public class DownloadService extends Service {
         // true is for video and false is image
 
         //for caption
-        int indexcaption = html.indexOf("\"caption\"");
-        indexcaption += 9;
+        int indexcaption = html.indexOf("edge_media_to_caption");
+        indexcaption += 53;
 
         int startCaption = html.indexOf("\"", indexcaption);
         startCaption += 1;

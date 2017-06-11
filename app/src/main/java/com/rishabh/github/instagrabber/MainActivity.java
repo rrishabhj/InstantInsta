@@ -183,6 +183,5 @@ public class MainActivity extends AppCompatActivity implements
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.main_menu, menu);
     return true;
-
   }
 }
