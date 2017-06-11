@@ -20,22 +20,32 @@
       android:orientation="vertical"
       android:layout_margin="12dp"
       >
-  <android.support.design.widget.TextInputLayout
-      android:id="@+id/input_layout_url"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-    <EditText
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/edittxturl"
-        android:layout_marginTop="16dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:hint="Enter URL"/>
-  </android.support.design.widget.TextInputLayout>
+        android:orientation="horizontal"
+        >
+
+      <EditText
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:id="@+id/edittxturl"
+          android:layout_weight="1"
+          android:layout_marginTop="16dp"
+          android:layout_alignParentTop="true"
+          android:layout_alignParentLeft="true"
+          android:layout_alignParentStart="true"
+          android:hint="Enter URL"/>
+      <ImageView
+          android:id="@+id/ivDel"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:src="@android:drawable/ic_delete"
+          android:layout_marginTop="16dp"
+          />
+
+    </LinearLayout>
 
 
   <LinearLayout

@@ -66,6 +66,7 @@ import org.jsoup.nodes.Document;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static com.rishabh.github.instagrabber.R.id.cv_downloadView;
+import static com.rishabh.github.instagrabber.R.id.edittxturl;
 import static com.rishabh.github.instagrabber.service.FileDownloaderService.RESPONSE_DOWNLOAD_PROGRESS;
 
 public class DownloadFragment extends Fragment {
@@ -76,7 +77,7 @@ public class DownloadFragment extends Fragment {
 	private EditText etURL;
 	static ProgressDialog mProgressDialog = null;
 	Button btnCheckURL,btnPaste,btnguide;
-	ImageView ivImage, ivPlayBtn;
+	ImageView ivImage, ivPlayBtn,ivDel;
 	private ClipboardManager clipBoard;
 	private boolean type;
 	FloatingActionButton fabDownload;
@@ -122,6 +123,7 @@ public class DownloadFragment extends Fragment {
 
 		fabDownload = (FloatingActionButton) rootView.findViewById(R.id.fab);
 		ivPlayBtn = (ImageView) rootView.findViewById(R.id.ivPlayBtn);
+		ivDel = (ImageView) rootView.findViewById(R.id.ivDel);
 
 		ivPlayBtn.setVisibility(View.INVISIBLE);
 		clipBoard = (ClipboardManager)mContext.getSystemService(CLIPBOARD_SERVICE);
@@ -156,6 +158,12 @@ public class DownloadFragment extends Fragment {
 			}
 		});
 
+		ivDel.setOnClickListener(new View.OnClickListener() {
+			@Override public void onClick(View view) {
+				etURL.setText("");
+			}
+		});
+
 
 		btnCheckURL.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View view) {
@@ -186,16 +194,18 @@ public class DownloadFragment extends Fragment {
 
 						cvdownloadView.setVisibility(View.VISIBLE);
 						FileDownloaderService.startAction(mContext, etURL.getText().toString(), new imageDownloadReceiver(new Handler()));
-						Toast.makeText(mContext, "Post Already Downloaded", Toast.LENGTH_SHORT).show();
+						//Toast.makeText(mContext, "Post Already Downloaded", Toast.LENGTH_SHORT).show();
 						((MainActivity) activity).viewPager.setCurrentItem(1, true);
-					} else {
+					}
+					else {
 						Toast.makeText(mContext, "Wrong URL", Toast.LENGTH_SHORT).show();
 					}
-				}else {
+				}
+				else {
 					Toast.makeText(mContext, "Post Already Downloaded",Toast.LENGTH_SHORT).show();
 					((MainActivity)activity).viewPager.setCurrentItem(1, true);
 				}
-				//new DownloadFileFromURL().execute(etURL.getText().toString());
+				new DownloadFileFromURL().execute(etURL.getText().toString());
 			}
 		});
 
@@ -212,9 +222,9 @@ public class DownloadFragment extends Fragment {
 				String a = clipboard.getText().toString();
 				Toast.makeText(mContext,"Copy:\n"+a,Toast.LENGTH_LONG).show();
 
-				if(mPreviousText.equals(a)) {
-					return;
-				}else {
+				//if(mPreviousText.equals(a)) {
+				//	return;
+				//}else {
 
 					//File direct = new File(Environment.getExternalStorageDirectory() + "/InstantInsta.mp4");
 
@@ -225,13 +235,13 @@ public class DownloadFragment extends Fragment {
 							imageDownloadReceiver imageDownloadReceiver = new imageDownloadReceiver(handler);
 							FileDownloaderService.startAction(mContext, a, imageDownloadReceiver);
 							//mService.downloadAsynFile(a);
-							mPreviousText = a;
+							//mPreviousText = a;
 						}
 					}else {
 							Toast.makeText(mContext, "Post Already Downloaded",Toast.LENGTH_SHORT).show();
 						((MainActivity)activity).viewPager.setCurrentItem(1, true);
 					}
-				}
+				//}
 			}
 		}
 		);
@@ -597,7 +607,7 @@ public class DownloadFragment extends Fragment {
 					//}else {
 					// for image url
 
-					int index = html.indexOf("display_src");
+					int index = html.indexOf("display_url");
 					index += 13;
 					int start = html.indexOf("\"", index);
 					start += 1;
@@ -617,8 +627,8 @@ public class DownloadFragment extends Fragment {
 
 
 				//for caption
-				int indexcaption = html.indexOf("\"caption\"");
-				indexcaption += 9;
+				int indexcaption = html.indexOf("edge_media_to_caption");
+				indexcaption += 53;
 
 				int startCaption = html.indexOf("\"", indexcaption);
 				startCaption += 1;

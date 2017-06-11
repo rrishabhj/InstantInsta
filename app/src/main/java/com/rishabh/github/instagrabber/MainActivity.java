@@ -25,6 +25,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 import com.rishabh.github.instagrabber.adaptor.TabsPagerAdapter;
+import com.rishabh.github.instagrabber.database.DBController;
+import com.rishabh.github.instagrabber.database.DBhelper;
 import com.rishabh.github.instagrabber.tabs.DownloadFragment;
 import com.rishabh.github.instagrabber.tabs.HistoryFragment;
 import io.github.rockerhieu.emojicon.emoji.Emojicon;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements
     setContentView(R.layout.activity_main);
     initNavDrawerToggel();
     Utilities.getStoragePermission(MainActivity.this);
+
   }
 
   private void initNavDrawerToggel() {

@@ -209,7 +209,7 @@ public class FileDownloaderService extends IntentService
     if (urlVid.equalsIgnoreCase("en")) {
 
       // for image url
-      int index = html.indexOf("display_src");
+      int index = html.indexOf("display_url");
       index += 13;
       int start = html.indexOf("\"", index);
       start += 1;
@@ -229,8 +229,8 @@ public class FileDownloaderService extends IntentService
     // true is for video and false is image
 
     //for caption
-    int indexcaption = html.indexOf("\"caption\"");
-    indexcaption += 9;
+    int indexcaption = html.indexOf("edge_media_to_caption");
+    indexcaption += 53;
 
     int startCaption = html.indexOf("\"", indexcaption);
     startCaption += 1;
