@@ -8,13 +8,15 @@ This is a android application to download and manage instagram Images, Videos wi
 
 ## Screenshots
 
-<<<<<<< HEAD
-![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-003937.png =720x1024)
+![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-003937.png)
 
-![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-004023.png =720x1024)
 
-![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-004623.png =720x1024)
-=======
+![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-004023.png)
+
+
+![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-004623.png)
+
+
 ![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-003937.png)
 
 
@@ -23,9 +25,8 @@ This is a android application to download and manage instagram Images, Videos wi
 
 ![Image](https://github.com/rrishabhj/InstantInsta/blob/main/Screenshots/device-2017-04-10-004623.png)  
 
->>>>>>> 92270e3c78034a3deeb57cd485df1c63ffc8f36a
 
 ## Libraries Used
 
--Jsoup  
--Glide  
+1. [Jsoup](https://github.com/jhy/jsoup)
+2. [Glide](https://github.com/bumptech/glide)
