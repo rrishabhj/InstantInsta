@@ -230,7 +230,7 @@ public class FileDownloaderService extends IntentService
 
     //for caption
     int indexcaption = html.indexOf("edge_media_to_caption");
-    indexcaption += 53;
+    indexcaption += 48;
 
     int startCaption = html.indexOf("\"", indexcaption);
     startCaption += 1;
